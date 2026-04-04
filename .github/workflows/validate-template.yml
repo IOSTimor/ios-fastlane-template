@@ -33,6 +33,19 @@ jobs:
           bash -n ios-newapp-template/scripts/create_project.sh
           bash -n ios-newapp-template/scripts/replace_placeholders.sh
 
+      - name: Integration test installer
+        run: |
+          tmpdir="$(mktemp -d)"
+          mkdir -p "$tmpdir/DemoApp/DemoApp.xcodeproj"
+          bash ios-newapp-template/scripts/create_project.sh "$tmpdir/DemoApp"
+          grep -q '^SCHEME=DemoApp$' "$tmpdir/DemoApp/fastlane/.env.default"
+          grep -q '^APP_NAME=DemoApp$' "$tmpdir/DemoApp/fastlane/.env.default"
+          if bash ios-newapp-template/scripts/create_project.sh "$tmpdir/DemoApp"; then
+            echo "Installer overwrote an existing fastlane setup unexpectedly"
+            exit 1
+          fi
+          bash ios-newapp-template/scripts/create_project.sh "$tmpdir/DemoApp" --force
+
       - name: Validate fastlane lanes
         working-directory: ios-newapp-template
         run: |

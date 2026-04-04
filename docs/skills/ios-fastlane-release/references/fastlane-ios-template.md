@@ -189,3 +189,5 @@ fastlane ios submit_review \
 7. run `fastlane ios local_build`
 
 The repository template includes starter metadata content for `en-US` and `zh-Hans`. Treat it as editable placeholder content, not production copy.
+
+The template also includes optional metadata starter files such as `subtitle.txt`, `promotional_text.txt`, `marketing_url.txt`, and `name.txt`, plus locale-specific screenshot README guidance.

@@ -3,6 +3,15 @@
 set -euo pipefail
 
 TARGET_DIR=${1:-}
+FORCE_OVERWRITE=${FORCE_OVERWRITE:-false}
+
+bool_is_true() {
+  local raw=${1:-false}
+  case "$(printf '%s' "$raw" | tr '[:upper:]' '[:lower:]')" in
+    1|true|yes|y|on) return 0 ;;
+    *) return 1 ;;
+  esac
+}
 
 detect_single_match() {
   local target_dir=$1
@@ -41,8 +50,12 @@ upsert_env_value() {
 }
 
 if [[ -z "$TARGET_DIR" ]]; then
-  echo "Usage: bash scripts/create_project.sh /absolute/or/relative/path/to/ios-project"
+  echo "Usage: bash scripts/create_project.sh /absolute/or/relative/path/to/ios-project [--force]"
   exit 1
+fi
+
+if [[ ${2:-} == "--force" ]]; then
+  FORCE_OVERWRITE=true
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -52,6 +65,15 @@ TARGET_DIR="$(cd "$TARGET_DIR" 2>/dev/null && pwd || true)"
 if [[ -z "$TARGET_DIR" || ! -d "$TARGET_DIR" ]]; then
   echo "Target directory does not exist: ${1}"
   exit 1
+fi
+
+if [[ -e "$TARGET_DIR/fastlane/Fastfile" || -e "$TARGET_DIR/fastlane/Appfile" || -e "$TARGET_DIR/fastlane/.env.default" ]]; then
+  if ! bool_is_true "$FORCE_OVERWRITE"; then
+    echo "Existing fastlane configuration detected in $TARGET_DIR/fastlane"
+    echo "Refusing to overwrite automatically."
+    echo "Re-run with --force or FORCE_OVERWRITE=true if you want to replace the template files."
+    exit 1
+  fi
 fi
 
 DETECTED_WORKSPACE=$(detect_single_match "$TARGET_DIR" "*.xcworkspace" || true)

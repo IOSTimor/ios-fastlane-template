@@ -41,6 +41,12 @@ def directory_has_files?(path)
   Dir.glob(File.join(path, "**", "*")).any? { |entry| File.file?(entry) }
 end
 
+def screenshot_file?(entry)
+  return false unless File.file?(entry)
+
+  %w[.png .jpg .jpeg].include?(File.extname(entry).downcase)
+end
+
 def locale_directories(path)
   return [] unless Dir.exist?(path)
 
@@ -81,9 +87,8 @@ def collect_asset_precheck
 
   screenshot_report = screenshot_locales.map do |locale_path|
     files = Dir.glob(File.join(locale_path, "*"))
-      .select { |entry| File.file?(entry) }
+      .select { |entry| screenshot_file?(entry) }
       .map { |entry| File.basename(entry) }
-      .reject { |name| name.start_with?(".") }
       .sort
 
     {

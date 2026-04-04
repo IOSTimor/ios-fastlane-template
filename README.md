@@ -16,6 +16,7 @@ This repository focuses on release automation only. It does not generate an Xcod
 - Safe defaults in `fastlane/.env.default`
 - Optional `Gemfile` for pinned fastlane usage
 - Metadata and screenshot folder structure with `en-US` and `zh-Hans` sample metadata
+- Screenshot locale README guidance and optional metadata template files
 - Installer script for existing iOS projects
 - Workflows for local IPA build, TestFlight-only upload, review submission, existing app release, new app first release, and metadata-only upload
 
@@ -75,6 +76,8 @@ fastlane ios local_build scheme:"MyApp" export_method:"development"
 ```
 
 If your team prefers pinned Ruby dependencies, run `bundle install` and switch to `bundle exec fastlane ...`.
+
+The installer refuses to overwrite an existing `fastlane/` setup unless you pass `--force` or `FORCE_OVERWRITE=true`.
 
 ### Minimum Required Inputs
 
@@ -155,6 +158,11 @@ Makefile shortcuts:
 make -C ios-newapp-template help
 ```
 
+Screenshot guidance lives in:
+
+- `ios-newapp-template/fastlane/screenshots/en-US/README.md`
+- `ios-newapp-template/fastlane/screenshots/zh-Hans/README.md`
+
 ### Assumptions
 
 - Xcode signing already works
@@ -194,6 +202,7 @@ This repository is ready to publish as a reusable template, but actual release e
 - 可提交的安全默认值 `fastlane/.env.default`
 - 可选的 `Gemfile`
 - 自带 `en-US` 和 `zh-Hans` 示例内容的 `metadata` / `screenshots` 目录结构
+- 截图目录说明和可选 metadata 模板文件
 - 安装到现有 iOS 工程的脚本
 - 支持本地 IPA、已有 App 发布、新 App 首发、仅上传元数据
 - 支持本地 IPA、仅上传 TestFlight、提交审核、已有 App 发布、新 App 首发、仅上传元数据
@@ -254,6 +263,8 @@ fastlane ios local_build scheme:"MyApp" export_method:"development"
 ```
 
 如果你们团队想固定 Ruby 依赖版本，再执行 `bundle install`，后续命令改成 `bundle exec fastlane ...`。
+
+安装脚本默认不会覆盖已经存在的 `fastlane/` 配置；如需覆盖，请显式传 `--force` 或设置 `FORCE_OVERWRITE=true`。
 
 ### 最少要填写的配置
 
@@ -333,6 +344,11 @@ fastlane ios metadata_only app_identifier:"com.example.app"
 ```bash
 make -C ios-newapp-template help
 ```
+
+截图规范说明在这里：
+
+- `ios-newapp-template/fastlane/screenshots/en-US/README.md`
+- `ios-newapp-template/fastlane/screenshots/zh-Hans/README.md`
 
 ### 使用前提
 

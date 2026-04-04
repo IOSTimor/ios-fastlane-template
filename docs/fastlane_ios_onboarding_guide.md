@@ -51,6 +51,8 @@ Then in the target project:
 cp .env.example .env
 ```
 
+If the target project already has a `fastlane/` setup, the installer will stop instead of overwriting it. Use `--force` only when you intentionally want to replace the template files.
+
 Optional but recommended for teams that want pinned Ruby dependencies:
 
 ```bash
@@ -219,6 +221,12 @@ Rules:
 - commit text metadata when it is safe to share
 - keep screenshots local or commit only sanitized examples
 - the template already includes `en-US` and `zh-Hans` sample metadata files that should be rewritten per app
+- the template also includes optional starter files such as `subtitle.txt`, `promotional_text.txt`, `marketing_url.txt`, and `name.txt`
+
+Screenshot guidance:
+
+- `fastlane/screenshots/en-US/README.md`
+- `fastlane/screenshots/zh-Hans/README.md`
 
 If there are no metadata or screenshot files, the relevant upload step is skipped unless you explicitly force it.
 
