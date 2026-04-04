@@ -10,6 +10,20 @@ The format is based on Keep a Changelog, and this repository follows Semantic Ve
 
 - Placeholder for upcoming changes
 
+## [1.2.0] - 2026-04-04
+
+### Added
+
+- Automatic `.env` generation during installation when the target project does not already have one
+- Homebrew tap publishing notes and tap-ready packaging guidance
+- Explicit recommended installer commands for complex project layouts
+
+### Changed
+
+- Multi-project and multi-workspace detection now leaves values blank instead of preserving misleading defaults
+- Installer CLI usage now documents explicit override options
+- CI now validates generated `.env` values and multi-project detection behavior
+
 ## [1.1.0] - 2026-04-04
 
 ### Added

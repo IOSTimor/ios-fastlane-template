@@ -36,6 +36,8 @@ The installer only auto-detects a single project or workspace cleanly. In multi-
 - re-run with `--project`, `--workspace`, `--scheme`, or `--app-name` if needed
 - run `fastlane ios validate_setup`
 
+The installer now prints a recommended explicit command to help you re-run it with concrete values.
+
 ## Why does `precheck_assets` show zero screenshots?
 
 `precheck_assets` only counts actual screenshot image files such as `.png`, `.jpg`, or `.jpeg`. Locale README files are intentionally ignored.

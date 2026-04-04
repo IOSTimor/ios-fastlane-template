@@ -63,6 +63,12 @@ pick_single_match() {
   fi
 }
 
+first_match_name() {
+  local matches=$1
+
+  printf '%s\n' "$matches" | sed '/^$/d' | head -n 1 | xargs basename
+}
+
 print_match_warning() {
   local label=$1
   local matches=$2
@@ -76,6 +82,37 @@ print_match_warning() {
       echo "  - $(basename "$match")"
     done
     echo "Set ${option_name} explicitly and re-run if needed."
+  fi
+}
+
+print_recommended_command() {
+  local project_suggestion=$1
+  local workspace_suggestion=$2
+  local scheme_suggestion=$3
+  local app_name_suggestion=$4
+  local needs_recommendation=false
+  local command='ios-fastlane-template /path/to/your/ios-project'
+
+  [[ -n "$project_suggestion" ]] && {
+    command="${command} --project ${project_suggestion}"
+    needs_recommendation=true
+  }
+  [[ -n "$workspace_suggestion" ]] && {
+    command="${command} --workspace ${workspace_suggestion}"
+    needs_recommendation=true
+  }
+  [[ -n "$scheme_suggestion" ]] && {
+    command="${command} --scheme ${scheme_suggestion}"
+    needs_recommendation=true
+  }
+  [[ -n "$app_name_suggestion" ]] && {
+    command="${command} --app-name ${app_name_suggestion}"
+    needs_recommendation=true
+  }
+
+  if bool_is_true "$needs_recommendation"; then
+    echo "Recommended explicit install command:"
+    echo "  ${command}"
   fi
 }
 
@@ -181,6 +218,11 @@ fi
 PROJECT_MATCHES=$(collect_matches "$TARGET_DIR" "*.xcodeproj")
 WORKSPACE_MATCHES=$(collect_matches "$TARGET_DIR" "*.xcworkspace")
 
+PROJECT_SUGGESTION=$(first_match_name "$PROJECT_MATCHES")
+WORKSPACE_SUGGESTION=$(first_match_name "$WORKSPACE_MATCHES")
+SCHEME_SUGGESTION=$(infer_scheme_from_project "${PROJECT_SUGGESTION}")
+APP_NAME_SUGGESTION=${SCHEME_SUGGESTION:-}
+
 DETECTED_PROJECT=${PROJECT_OVERRIDE:-$(pick_single_match "$PROJECT_MATCHES")}
 DETECTED_WORKSPACE=${WORKSPACE_OVERRIDE:-$(pick_single_match "$WORKSPACE_MATCHES")}
 DETECTED_SCHEME=${SCHEME_OVERRIDE:-$(infer_scheme_from_project "${DETECTED_PROJECT}")}
@@ -234,6 +276,7 @@ fi
 
 print_match_warning "project" "$PROJECT_MATCHES" "--project"
 print_match_warning "workspace" "$WORKSPACE_MATCHES" "--workspace"
+print_recommended_command "${PROJECT_SUGGESTION:-}" "${WORKSPACE_SUGGESTION:-}" "${SCHEME_SUGGESTION:-}" "${APP_NAME_SUGGESTION:-}"
 
 if bool_is_true "$GENERATE_ENV"; then
   if [[ -f "$TARGET_DIR/.env" ]]; then

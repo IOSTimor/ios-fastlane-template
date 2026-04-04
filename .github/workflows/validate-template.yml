@@ -61,6 +61,7 @@ jobs:
             exit 1
           fi
           grep -q 'Multiple projects detected' "$tmpdir/output.txt"
+          grep -q 'Recommended explicit install command' "$tmpdir/output.txt"
           bash ios-newapp-template/scripts/create_project.sh "$tmpdir/MultiApp" --force --project AppOne.xcodeproj --scheme AppOne --app-name AppOne
           grep -q '^PROJECT=AppOne.xcodeproj$' "$tmpdir/MultiApp/fastlane/.env.default"
 
