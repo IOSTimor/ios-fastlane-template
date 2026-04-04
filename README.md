@@ -7,8 +7,9 @@
 Reusable `fastlane/` release template for iOS apps that already manage signing in Xcode.
 
 [![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![CI](https://img.shields.io/github/actions/workflow/status/IOSTimor/ios-fastlane-template/validate-template.yml?branch=main&label=validate)](https://github.com/IOSTimor/ios-fastlane-template/actions/workflows/validate-template.yml)
-[![Release](https://img.shields.io/github/v/tag/IOSTimor/ios-fastlane-template?label=release)](https://github.com/IOSTimor/ios-fastlane-template/releases)
+[![Validate](https://img.shields.io/github/actions/workflow/status/IOSTimor/ios-fastlane-template/validate-template.yml?branch=main&label=validate)](https://github.com/IOSTimor/ios-fastlane-template/actions/workflows/validate-template.yml)
+[![Latest Release](https://img.shields.io/github/v/release/IOSTimor/ios-fastlane-template?label=latest%20release)](https://github.com/IOSTimor/ios-fastlane-template/releases)
+[![Homebrew](https://img.shields.io/badge/homebrew-formula-orange)](https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/Formula/ios-fastlane-template.rb)
 
 This repository focuses on release automation only. It does not generate an Xcode project, manage certificates with `match`, or hide Apple-side prerequisites.
 
@@ -181,8 +182,9 @@ fastlane ios submit_review \
 适用于“签名已经由 Xcode 管理”的 iOS 项目的可复用 `fastlane` 发布模板。
 
 [![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![CI](https://img.shields.io/github/actions/workflow/status/IOSTimor/ios-fastlane-template/validate-template.yml?branch=main&label=validate)](https://github.com/IOSTimor/ios-fastlane-template/actions/workflows/validate-template.yml)
-[![Release](https://img.shields.io/github/v/tag/IOSTimor/ios-fastlane-template?label=release)](https://github.com/IOSTimor/ios-fastlane-template/releases)
+[![Validate](https://img.shields.io/github/actions/workflow/status/IOSTimor/ios-fastlane-template/validate-template.yml?branch=main&label=validate)](https://github.com/IOSTimor/ios-fastlane-template/actions/workflows/validate-template.yml)
+[![Latest Release](https://img.shields.io/github/v/release/IOSTimor/ios-fastlane-template?label=latest%20release)](https://github.com/IOSTimor/ios-fastlane-template/releases)
+[![Homebrew](https://img.shields.io/badge/homebrew-formula-orange)](https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/Formula/ios-fastlane-template.rb)
 
 这个仓库只解决一件事：发布自动化。它不会生成 Xcode 工程，不会引入 `match`，也不会假装 Apple 侧前置条件已经帮你处理好了。
 

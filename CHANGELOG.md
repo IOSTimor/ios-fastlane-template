@@ -10,6 +10,22 @@ The format is based on Keep a Changelog, and this repository follows Semantic Ve
 
 - Placeholder for upcoming changes
 
+## [1.1.0] - 2026-04-04
+
+### Added
+
+- `testflight_only`, `submit_review`, and `precheck_assets` lanes
+- `curl | bash` installer flow and Homebrew formula support
+- `en-US` and `zh-Hans` starter metadata content plus screenshot guidance
+- `SECURITY.md`, troubleshooting guide, and release notes drafts
+
+### Changed
+
+- Installer now auto-detects project, workspace, scheme, and app name defaults
+- Installer now refuses to overwrite existing fastlane setups unless forced
+- CI now validates installer flows and formula syntax
+- README homepage structure now emphasizes quick start, workflows, and adoption guidance
+
 ## [1.0.0] - 2026-04-04
 
 ### Added
