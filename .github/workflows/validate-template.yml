@@ -32,6 +32,7 @@ jobs:
         run: |
           bash -n ios-newapp-template/scripts/create_project.sh
           bash -n ios-newapp-template/scripts/replace_placeholders.sh
+          bash -n scripts/install.sh
 
       - name: Integration test installer
         run: |
@@ -45,6 +46,20 @@ jobs:
             exit 1
           fi
           bash ios-newapp-template/scripts/create_project.sh "$tmpdir/DemoApp" --force
+
+      - name: Integration test curl installer
+        run: |
+          tmpdir="$(mktemp -d)"
+          archive="$tmpdir/template.tar.gz"
+          repo_copy_root="$tmpdir/archive-root"
+          mkdir -p "$tmpdir/TargetApp/TargetApp.xcodeproj"
+          mkdir -p "$repo_copy_root/ios-fastlane-template-main"
+          cp -R . "$repo_copy_root/ios-fastlane-template-main"
+          rm -rf "$repo_copy_root/ios-fastlane-template-main/.git"
+          tar -czf "$archive" -C "$repo_copy_root" ios-fastlane-template-main
+          LOCAL_ARCHIVE_PATH="$archive" bash scripts/install.sh "$tmpdir/TargetApp"
+          grep -q '^SCHEME=TargetApp$' "$tmpdir/TargetApp/fastlane/.env.default"
+          grep -q '^APP_NAME=TargetApp$' "$tmpdir/TargetApp/fastlane/.env.default"
 
       - name: Validate fastlane lanes
         working-directory: ios-newapp-template

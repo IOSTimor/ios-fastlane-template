@@ -45,6 +45,12 @@ cd ios-newapp-template
 bash scripts/create_project.sh /path/to/your/ios-project
 ```
 
+Or install directly from GitHub:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/scripts/install.sh | bash -s -- /path/to/your/ios-project
+```
+
 Then in the target project:
 
 ```bash

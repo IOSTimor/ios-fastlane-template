@@ -65,6 +65,12 @@ cd ios-fastlane-template/ios-newapp-template
 bash scripts/create_project.sh /path/to/your/ios-project
 ```
 
+#### Option 3: Install with curl
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/scripts/install.sh | bash -s -- /path/to/your/ios-project
+```
+
 Then inside your target iOS project:
 
 ```bash
@@ -78,6 +84,12 @@ fastlane ios local_build scheme:"MyApp" export_method:"development"
 If your team prefers pinned Ruby dependencies, run `bundle install` and switch to `bundle exec fastlane ...`.
 
 The installer refuses to overwrite an existing `fastlane/` setup unless you pass `--force` or `FORCE_OVERWRITE=true`.
+
+For a forced remote install:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/scripts/install.sh | bash -s -- /path/to/your/ios-project --force
+```
 
 ### Minimum Required Inputs
 
@@ -204,7 +216,6 @@ This repository is ready to publish as a reusable template, but actual release e
 - 自带 `en-US` 和 `zh-Hans` 示例内容的 `metadata` / `screenshots` 目录结构
 - 截图目录说明和可选 metadata 模板文件
 - 安装到现有 iOS 工程的脚本
-- 支持本地 IPA、已有 App 发布、新 App 首发、仅上传元数据
 - 支持本地 IPA、仅上传 TestFlight、提交审核、已有 App 发布、新 App 首发、仅上传元数据
 
 ### 仓库结构
@@ -252,6 +263,12 @@ cd ios-fastlane-template/ios-newapp-template
 bash scripts/create_project.sh /path/to/your/ios-project
 ```
 
+#### 方式三：使用 curl 直接安装
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/scripts/install.sh | bash -s -- /path/to/your/ios-project
+```
+
 然后进入目标 iOS 工程：
 
 ```bash
@@ -265,6 +282,12 @@ fastlane ios local_build scheme:"MyApp" export_method:"development"
 如果你们团队想固定 Ruby 依赖版本，再执行 `bundle install`，后续命令改成 `bundle exec fastlane ...`。
 
 安装脚本默认不会覆盖已经存在的 `fastlane/` 配置；如需覆盖，请显式传 `--force` 或设置 `FORCE_OVERWRITE=true`。
+
+如果要远程强制覆盖安装：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/scripts/install.sh | bash -s -- /path/to/your/ios-project --force
+```
 
 ### 最少要填写的配置
 

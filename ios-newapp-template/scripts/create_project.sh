@@ -13,6 +13,17 @@ bool_is_true() {
   esac
 }
 
+portable_sed_in_place() {
+  local expression=$1
+  local file_path=$2
+
+  if sed --version >/dev/null 2>&1; then
+    sed -i "$expression" "$file_path"
+  else
+    sed -i '' "$expression" "$file_path"
+  fi
+}
+
 detect_single_match() {
   local target_dir=$1
   local pattern=$2
@@ -43,7 +54,7 @@ upsert_env_value() {
   [[ -n "$value" ]] || return 0
 
   if grep -q "^${key}=" "$file_path"; then
-    sed -i '' "s|^${key}=.*|${key}=${value}|" "$file_path"
+    portable_sed_in_place "s|^${key}=.*|${key}=${value}|" "$file_path"
   else
     printf "\n%s=%s\n" "$key" "$value" >> "$file_path"
   fi
