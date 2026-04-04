@@ -17,7 +17,7 @@ This repository focuses on release automation only. It does not generate an Xcod
 - Optional `Gemfile` for pinned fastlane usage
 - Metadata and screenshot folder structure
 - Installer script for existing iOS projects
-- Workflows for local IPA build, existing app release, new app first release, and metadata-only upload
+- Workflows for local IPA build, TestFlight-only upload, review submission, existing app release, new app first release, and metadata-only upload
 
 ### Repository Structure
 
@@ -44,8 +44,11 @@ This repository focuses on release automation only. It does not generate an Xcod
 1. `local_build`: export a local IPA only
 2. `release_existing`: release an app that already exists in App Store Connect
 3. `release_new`: optionally create the app and run the first release flow
-4. `metadata_only`: upload metadata and screenshots without a binary
-5. `validate_setup`: inspect inferred paths and local template readiness
+4. `testflight_only`: build and upload to TestFlight without review submission
+5. `submit_review`: submit an existing build for App Store review
+6. `metadata_only`: upload metadata and screenshots without a binary
+7. `precheck_assets`: verify local metadata and screenshot readiness before upload
+8. `validate_setup`: inspect inferred paths and local template readiness
 
 ### Quick Start
 
@@ -67,6 +70,7 @@ Then inside your target iOS project:
 cp .env.example .env
 fastlane lanes
 fastlane ios validate_setup
+fastlane ios precheck_assets
 fastlane ios local_build scheme:"MyApp" export_method:"development"
 ```
 
@@ -120,6 +124,25 @@ fastlane ios release_new \
   sku:"myapp001"
 ```
 
+TestFlight only:
+
+```bash
+fastlane ios testflight_only \
+  scheme:"MyApp" \
+  app_identifier:"com.example.app" \
+  version:"1.0.0" \
+  build_number:"1"
+```
+
+Submit review:
+
+```bash
+fastlane ios submit_review \
+  app_identifier:"com.example.app" \
+  upload_metadata:true \
+  upload_screenshots:true
+```
+
 Metadata only:
 
 ```bash
@@ -144,6 +167,7 @@ make -C ios-newapp-template help
 ```bash
 fastlane lanes
 fastlane ios validate_setup
+fastlane ios precheck_assets
 xcodebuild -list -project MyApp.xcodeproj
 ```
 
@@ -172,6 +196,7 @@ This repository is ready to publish as a reusable template, but actual release e
 - `metadata` / `screenshots` 目录结构
 - 安装到现有 iOS 工程的脚本
 - 支持本地 IPA、已有 App 发布、新 App 首发、仅上传元数据
+- 支持本地 IPA、仅上传 TestFlight、提交审核、已有 App 发布、新 App 首发、仅上传元数据
 
 ### 仓库结构
 
@@ -198,8 +223,11 @@ This repository is ready to publish as a reusable template, but actual release e
 1. `local_build`：只导出本地 IPA
 2. `release_existing`：发布到已存在的 App Store Connect 应用
 3. `release_new`：可选先创建应用，再执行首发
-4. `metadata_only`：只上传 metadata 和 screenshots
-5. `validate_setup`：检查当前模板识别到的路径和本地准备情况
+4. `testflight_only`：只构建并上传到 TestFlight
+5. `submit_review`：基于已有构建提交审核
+6. `metadata_only`：只上传 metadata 和 screenshots
+7. `precheck_assets`：预检查本地 metadata 和截图是否准备好
+8. `validate_setup`：检查当前模板识别到的路径和本地准备情况
 
 ### 快速使用
 
@@ -221,6 +249,7 @@ bash scripts/create_project.sh /path/to/your/ios-project
 cp .env.example .env
 fastlane lanes
 fastlane ios validate_setup
+fastlane ios precheck_assets
 fastlane ios local_build scheme:"MyApp" export_method:"development"
 ```
 
@@ -274,6 +303,25 @@ fastlane ios release_new \
   sku:"myapp001"
 ```
 
+仅上传 TestFlight：
+
+```bash
+fastlane ios testflight_only \
+  scheme:"MyApp" \
+  app_identifier:"com.example.app" \
+  version:"1.0.0" \
+  build_number:"1"
+```
+
+提交审核：
+
+```bash
+fastlane ios submit_review \
+  app_identifier:"com.example.app" \
+  upload_metadata:true \
+  upload_screenshots:true
+```
+
 仅上传元数据：
 
 ```bash
@@ -298,6 +346,7 @@ make -C ios-newapp-template help
 ```bash
 fastlane lanes
 fastlane ios validate_setup
+fastlane ios precheck_assets
 xcodebuild -list -project MyApp.xcodeproj
 ```
 

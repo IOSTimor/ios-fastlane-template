@@ -86,9 +86,12 @@ LANGUAGE=en-US
 Public lanes:
 
 - `validate_setup`
+- `precheck_assets`
 - `local_build`
 - `release_existing`
 - `release_new`
+- `testflight_only`
+- `submit_review`
 - `metadata_only`
 
 Private lanes:
@@ -148,6 +151,25 @@ fastlane ios metadata_only \
   upload_screenshots:true
 ```
 
+TestFlight only:
+
+```bash
+fastlane ios testflight_only \
+  scheme:"MyApp" \
+  app_identifier:"com.example.app" \
+  version:"1.0.0" \
+  build_number:"1"
+```
+
+Submit review:
+
+```bash
+fastlane ios submit_review \
+  app_identifier:"com.example.app" \
+  upload_metadata:true \
+  upload_screenshots:true
+```
+
 ## What should remain project-specific
 
 - Xcode project or workspace path
@@ -162,5 +184,6 @@ fastlane ios metadata_only \
 2. create `.env` from `.env.example`
 3. run `fastlane lanes`
 4. run `fastlane ios validate_setup`
-5. run `xcodebuild -list`
-6. run `fastlane ios local_build`
+5. run `fastlane ios precheck_assets`
+6. run `xcodebuild -list`
+7. run `fastlane ios local_build`

@@ -41,6 +41,106 @@ def directory_has_files?(path)
   Dir.glob(File.join(path, "**", "*")).any? { |entry| File.file?(entry) }
 end
 
+def locale_directories(path)
+  return [] unless Dir.exist?(path)
+
+  Dir.children(path)
+    .map { |name| File.join(path, name) }
+    .select { |entry| File.directory?(entry) }
+    .sort
+end
+
+def relative_locale_name(path)
+  File.basename(path)
+end
+
+def metadata_required_files
+  %w[
+    description.txt
+    keywords.txt
+    privacy_policy_url.txt
+    release_notes.txt
+    support_url.txt
+  ]
+end
+
+def collect_asset_precheck
+  metadata_locales = locale_directories(metadata_path)
+  screenshot_locales = locale_directories(screenshots_path)
+
+  metadata_report = metadata_locales.map do |locale_path|
+    existing_files = Dir.glob(File.join(locale_path, "*.txt")).map { |file| File.basename(file) }
+    missing_files = metadata_required_files - existing_files
+
+    {
+      locale: relative_locale_name(locale_path),
+      existing_files: existing_files.sort,
+      missing_files: missing_files.sort
+    }
+  end
+
+  screenshot_report = screenshot_locales.map do |locale_path|
+    files = Dir.glob(File.join(locale_path, "*"))
+      .select { |entry| File.file?(entry) }
+      .map { |entry| File.basename(entry) }
+      .reject { |name| name.start_with?(".") }
+      .sort
+
+    {
+      locale: relative_locale_name(locale_path),
+      file_count: files.length,
+      files: files
+    }
+  end
+
+  {
+    metadata_report: metadata_report,
+    screenshot_report: screenshot_report,
+    metadata_present: metadata_report.any? { |item| item[:existing_files].any? },
+    screenshots_present: screenshot_report.any? { |item| item[:file_count].positive? }
+  }
+end
+
+def print_asset_precheck(report)
+  if report[:metadata_report].empty?
+    UI.important("No metadata locale directories found at #{metadata_path}")
+  else
+    report[:metadata_report].each do |item|
+      UI.message("Metadata locale #{item[:locale]}: #{item[:existing_files].length} files")
+      UI.important("Metadata locale #{item[:locale]} missing: #{item[:missing_files].join(', ')}") unless item[:missing_files].empty?
+    end
+  end
+
+  if report[:screenshot_report].empty?
+    UI.important("No screenshot locale directories found at #{screenshots_path}")
+  else
+    report[:screenshot_report].each do |item|
+      UI.message("Screenshot locale #{item[:locale]}: #{item[:file_count]} files")
+    end
+  end
+end
+
+def ensure_upload_assets_ready!(upload_metadata:, upload_screenshots:)
+  report = collect_asset_precheck
+  print_asset_precheck(report)
+
+  if upload_metadata
+    unless report[:metadata_present]
+      UI.user_error!("Metadata upload requested, but no metadata files were found")
+    end
+
+    incomplete_locales = report[:metadata_report].select { |item| item[:existing_files].any? && item[:missing_files].any? }
+    unless incomplete_locales.empty?
+      locale_names = incomplete_locales.map { |item| item[:locale] }
+      UI.user_error!("Metadata upload requested, but metadata locales are incomplete: #{locale_names.join(', ')}")
+    end
+  end
+
+  if upload_screenshots && !report[:screenshots_present]
+    UI.user_error!("Screenshot upload requested, but no screenshot files were found")
+  end
+end
+
 def build_options(options, export_method:)
   build_options = {
     scheme: option_or_env(options, :scheme, "SCHEME"),
@@ -85,6 +185,17 @@ platform :ios do
     UI.message("Metadata available: #{directory_has_files?(metadata_path)}")
     UI.message("Screenshots available: #{directory_has_files?(screenshots_path)}")
     UI.message("Scheme default: #{ENV['SCHEME'] || '(unset)'}")
+    UI.message("Project default: #{ENV['PROJECT'] || '(unset)'}")
+    UI.message("Workspace default: #{ENV['WORKSPACE'] || '(unset)'}")
+  end
+
+  desc "Precheck metadata and screenshot assets before upload"
+  lane :precheck_assets do
+    report = collect_asset_precheck
+    print_asset_precheck(report)
+
+    UI.success("Metadata files found") if report[:metadata_present]
+    UI.success("Screenshot files found") if report[:screenshots_present]
   end
 
   desc "Generate a local IPA without any upload step"
@@ -138,6 +249,8 @@ platform :ios do
     end
 
     if upload_metadata || upload_screenshots || submit_for_review
+      ensure_upload_assets_ready!(upload_metadata: upload_metadata, upload_screenshots: upload_screenshots)
+
       deliver(
         api_key: api_key,
         app_identifier: option_or_env(options, :app_identifier, "APP_IDENTIFIER"),
@@ -173,6 +286,42 @@ platform :ios do
     shared_release(options)
   end
 
+  desc "Build and upload to TestFlight without App Store review submission"
+  lane :testflight_only do |options|
+    shared_release(
+      options.merge(
+        upload_testflight: true,
+        upload_metadata: false,
+        upload_screenshots: false,
+        submit_for_review: false,
+        automatic_release: false
+      )
+    )
+  end
+
+  desc "Submit an existing build for App Store review using local metadata and screenshots"
+  lane :submit_review do |options|
+    ensure_release_ready!(options)
+
+    upload_metadata = bool_option(options, :upload_metadata, directory_has_files?(metadata_path))
+    upload_screenshots = bool_option(options, :upload_screenshots, directory_has_files?(screenshots_path))
+    ensure_upload_assets_ready!(upload_metadata: upload_metadata, upload_screenshots: upload_screenshots)
+
+    deliver(
+      api_key: release_api_key,
+      app_identifier: option_or_env(options, :app_identifier, "APP_IDENTIFIER"),
+      metadata_path: metadata_path,
+      screenshots_path: screenshots_path,
+      skip_binary_upload: true,
+      skip_metadata: !upload_metadata,
+      skip_screenshots: !upload_screenshots,
+      force: true,
+      run_precheck_before_submit: false,
+      submit_for_review: true,
+      automatic_release: bool_option(options, :automatic_release, false)
+    )
+  end
+
   desc "Upload metadata and screenshots only when local assets exist"
   lane :metadata_only do |options|
     ensure_release_ready!(options)
@@ -181,7 +330,7 @@ platform :ios do
     upload_metadata = bool_option(options, :upload_metadata, directory_has_files?(metadata_path))
     upload_screenshots = bool_option(options, :upload_screenshots, directory_has_files?(screenshots_path))
 
-    UI.user_error!("No metadata or screenshots found to upload") unless upload_metadata || upload_screenshots
+    ensure_upload_assets_ready!(upload_metadata: upload_metadata, upload_screenshots: upload_screenshots)
 
     deliver(
       api_key: api_key,

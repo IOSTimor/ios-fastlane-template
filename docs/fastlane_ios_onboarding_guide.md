@@ -88,7 +88,10 @@ Public lanes:
 - `local_build`
 - `release_existing`
 - `release_new`
+- `testflight_only`
+- `submit_review`
 - `metadata_only`
+- `precheck_assets`
 - `validate_setup`
 
 Private lane:
@@ -115,6 +118,7 @@ Holds safe committed defaults such as `SCHEME`, `PROJECT`, `APP_NAME`, and `LANG
 
 ```bash
 fastlane ios validate_setup
+fastlane ios precheck_assets
 ```
 
 Checks the inferred paths and whether metadata or screenshots exist locally.
@@ -157,7 +161,27 @@ fastlane ios release_new \
   build_number:"1"
 ```
 
-### 5. Metadata and screenshot upload only
+### 5. TestFlight upload only
+
+```bash
+fastlane ios testflight_only \
+  scheme:"MyApp" \
+  app_identifier:"com.example.app" \
+  version:"1.0.0" \
+  build_number:"1"
+```
+
+### 6. Submit review using an existing build
+
+```bash
+fastlane ios submit_review \
+  app_identifier:"com.example.app" \
+  upload_metadata:true \
+  upload_screenshots:true \
+  automatic_release:false
+```
+
+### 7. Metadata and screenshot upload only
 
 ```bash
 fastlane ios metadata_only \
@@ -173,9 +197,12 @@ Inside the target project:
 ```bash
 make lanes
 make validate
+make precheck-assets
 make local-build SCHEME=MyApp EXPORT_METHOD=development
 make release-existing SCHEME=MyApp APP_IDENTIFIER=com.example.app
 make release-new SCHEME=MyApp APP_IDENTIFIER=com.example.app APP_NAME=MyApp SKU=myapp001
+make testflight-only SCHEME=MyApp APP_IDENTIFIER=com.example.app
+make submit-review APP_IDENTIFIER=com.example.app
 make metadata-only APP_IDENTIFIER=com.example.app
 ```
 
@@ -200,8 +227,9 @@ Prefer non-destructive checks in this order:
 
 1. `fastlane lanes`
 2. `fastlane ios validate_setup`
-3. `xcodebuild -list -project MyApp.xcodeproj`
-4. `fastlane ios local_build`
+3. `fastlane ios precheck_assets`
+4. `xcodebuild -list -project MyApp.xcodeproj`
+5. `fastlane ios local_build`
 
 Do not run release lanes until:
 

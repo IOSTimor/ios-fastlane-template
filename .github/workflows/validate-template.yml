@@ -1,0 +1,41 @@
+name: Validate Template
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+
+      - name: Install bundle
+        working-directory: ios-newapp-template
+        run: bundle install
+
+      - name: Validate Ruby syntax
+        run: |
+          ruby -c ios-newapp-template/fastlane/Fastfile
+          ruby -c ios-newapp-template/fastlane/Appfile
+
+      - name: Validate shell scripts
+        run: |
+          bash -n ios-newapp-template/scripts/create_project.sh
+          bash -n ios-newapp-template/scripts/replace_placeholders.sh
+
+      - name: Validate fastlane lanes
+        working-directory: ios-newapp-template
+        run: |
+          bundle exec fastlane lanes
+          bundle exec fastlane ios validate_setup
+          bundle exec fastlane ios precheck_assets
