@@ -1,0 +1,27 @@
+name: Test Formula
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test-formula:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Tap local repository
+        run: |
+          brew tap local/homebrew-tap "$PWD"
+
+      - name: Install formula
+        run: |
+          brew install ios-fastlane-template
+
+      - name: Verify CLI
+        run: |
+          ios-fastlane-template 2>&1 | grep "Usage:"
