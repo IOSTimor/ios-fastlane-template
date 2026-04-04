@@ -21,10 +21,13 @@ publish the formula in a dedicated tap repository:
 ## Suggested flow
 
 1. Create `IOSTimor/homebrew-tap`
-2. Copy [Formula/ios-fastlane-template.rb](/Users/cx/Desktop/ios-fastlane-template/Formula/ios-fastlane-template.rb) into that repo's `Formula/` directory
-3. Copy the template files from [`templates/homebrew-tap/`](/Users/cx/Desktop/ios-fastlane-template/templates/homebrew-tap/):
-   - [`templates/homebrew-tap/README.md`](/Users/cx/Desktop/ios-fastlane-template/templates/homebrew-tap/README.md)
-   - [`templates/homebrew-tap/.github/workflows/test-formula.yml`](/Users/cx/Desktop/ios-fastlane-template/templates/homebrew-tap/.github/workflows/test-formula.yml)
+2. Generate the tap scaffold locally:
+
+```bash
+bash scripts/prepare_homebrew_tap_repo.sh /path/to/homebrew-tap IOSTimor homebrew-tap
+```
+
+3. Commit the generated files into the tap repository
 4. Update the formula `version` and `sha256` whenever `scripts/install.sh` changes
 5. Test the tap locally
 
@@ -56,3 +59,9 @@ That command updates:
 based on the current hash of:
 
 - [`scripts/install.sh`](/Users/cx/Desktop/ios-fastlane-template/scripts/install.sh)
+
+To generate the tap repository skeleton itself, use:
+
+```bash
+bash scripts/prepare_homebrew_tap_repo.sh /path/to/homebrew-tap IOSTimor homebrew-tap
+```

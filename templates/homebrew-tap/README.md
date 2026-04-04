@@ -18,10 +18,16 @@ brew upgrade ios-fastlane-template
 
 ## Formula Source
 
-Copy the formula from the main repository:
+The main repository already provides the source formula:
 
 - source repo: `IOSTimor/ios-fastlane-template`
 - source file: `Formula/ios-fastlane-template.rb`
+
+You can scaffold this tap repo locally from the main repository with:
+
+```bash
+bash scripts/prepare_homebrew_tap_repo.sh /path/to/homebrew-tap IOSTimor homebrew-tap
+```
 
 ## Release Workflow
 
