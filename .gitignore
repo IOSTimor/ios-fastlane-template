@@ -1,9 +1,9 @@
 .DS_Store
 .env
 build/
-fastlane/report.xml
-fastlane/Preview.html
-fastlane/test_output
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/test_output
 *.ipa
 *.mobileprovision
 *.p12
