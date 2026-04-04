@@ -10,9 +10,15 @@ REPO_NAME=${REPO_NAME:-ios-fastlane-template}
 REPO_REF=${REPO_REF:-main}
 ARCHIVE_URL=${ARCHIVE_URL:-"https://codeload.github.com/${REPO_OWNER}/${REPO_NAME}/tar.gz/refs/heads/${REPO_REF}"}
 LOCAL_ARCHIVE_PATH=${LOCAL_ARCHIVE_PATH:-}
+SCRIPT_NAME="$(basename "$0")"
+RAW_INSTALL_URL="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/scripts/install.sh"
 
 if [[ -z "$TARGET_DIR" ]]; then
-  echo "Usage: curl -fsSL https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/scripts/install.sh | bash -s -- /path/to/your/ios-project [--force]"
+  if [[ "$SCRIPT_NAME" == "install.sh" || "$SCRIPT_NAME" == "bash" ]]; then
+    echo "Usage: curl -fsSL ${RAW_INSTALL_URL} | bash -s -- /path/to/your/ios-project [--force]"
+  else
+    echo "Usage: ${SCRIPT_NAME} /path/to/your/ios-project [--force]"
+  fi
   exit 1
 fi
 

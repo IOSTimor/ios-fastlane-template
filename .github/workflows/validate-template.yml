@@ -27,6 +27,7 @@ jobs:
         run: |
           ruby -c ios-newapp-template/fastlane/Fastfile
           ruby -c ios-newapp-template/fastlane/Appfile
+          ruby -c Formula/ios-fastlane-template.rb
 
       - name: Validate shell scripts
         run: |

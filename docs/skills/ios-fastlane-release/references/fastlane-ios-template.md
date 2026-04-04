@@ -183,6 +183,8 @@ fastlane ios submit_review \
 1. copy the template into the real iOS project
    Or install directly with:
    `curl -fsSL https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/scripts/install.sh | bash -s -- /path/to/your/ios-project`
+   Or install the local command with:
+   `brew install --formula https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/Formula/ios-fastlane-template.rb`
 2. create `.env` from `.env.example`
 3. run `fastlane lanes`
 4. run `fastlane ios validate_setup`

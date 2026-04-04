@@ -51,6 +51,13 @@ Or install directly from GitHub:
 curl -fsSL https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/scripts/install.sh | bash -s -- /path/to/your/ios-project
 ```
 
+Or install a local command with Homebrew:
+
+```bash
+brew install --formula https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/Formula/ios-fastlane-template.rb
+ios-fastlane-template /path/to/your/ios-project
+```
+
 Then in the target project:
 
 ```bash

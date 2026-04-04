@@ -71,6 +71,13 @@ bash scripts/create_project.sh /path/to/your/ios-project
 curl -fsSL https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/scripts/install.sh | bash -s -- /path/to/your/ios-project
 ```
 
+#### Option 4: Install with Homebrew
+
+```bash
+brew install --formula https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/Formula/ios-fastlane-template.rb
+ios-fastlane-template /path/to/your/ios-project
+```
+
 Then inside your target iOS project:
 
 ```bash
@@ -89,6 +96,12 @@ For a forced remote install:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/scripts/install.sh | bash -s -- /path/to/your/ios-project --force
+```
+
+For a forced Homebrew install:
+
+```bash
+ios-fastlane-template /path/to/your/ios-project --force
 ```
 
 ### Minimum Required Inputs
@@ -269,6 +282,13 @@ bash scripts/create_project.sh /path/to/your/ios-project
 curl -fsSL https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/scripts/install.sh | bash -s -- /path/to/your/ios-project
 ```
 
+#### 方式四：使用 Homebrew 安装
+
+```bash
+brew install --formula https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/Formula/ios-fastlane-template.rb
+ios-fastlane-template /path/to/your/ios-project
+```
+
 然后进入目标 iOS 工程：
 
 ```bash
@@ -287,6 +307,12 @@ fastlane ios local_build scheme:"MyApp" export_method:"development"
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/scripts/install.sh | bash -s -- /path/to/your/ios-project --force
+```
+
+如果通过 Homebrew 安装后需要强制覆盖：
+
+```bash
+ios-fastlane-template /path/to/your/ios-project --force
 ```
 
 ### 最少要填写的配置
