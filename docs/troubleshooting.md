@@ -31,7 +31,9 @@ curl -fsSL https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main
 The installer only auto-detects a single project or workspace cleanly. In multi-project setups:
 
 - review `fastlane/.env.default`
+- review the generated `.env`
 - set `PROJECT`, `WORKSPACE`, and `SCHEME` manually
+- re-run with `--project`, `--workspace`, `--scheme`, or `--app-name` if needed
 - run `fastlane ios validate_setup`
 
 ## Why does `precheck_assets` show zero screenshots?
@@ -58,6 +60,10 @@ bundle exec fastlane lanes
 ## What if Homebrew install works but `pod search` still fails?
 
 That is expected. Homebrew installs a CLI wrapper for the template installer. CocoaPods is a different distribution mechanism and not used here.
+
+## Does the installer create `.env` for me?
+
+Yes. If `.env` does not already exist, the installer copies `.env.example` to `.env` and fills detected defaults such as `PROJECT`, `WORKSPACE`, `SCHEME`, and `APP_NAME`.
 
 ## What should I check first if a lane fails?
 

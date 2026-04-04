@@ -3,7 +3,6 @@
 set -euo pipefail
 
 TARGET_DIR=${1:-}
-FORCE_FLAG=${2:-}
 
 REPO_OWNER=${REPO_OWNER:-IOSTimor}
 REPO_NAME=${REPO_NAME:-ios-fastlane-template}
@@ -15,10 +14,11 @@ RAW_INSTALL_URL="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/ma
 
 if [[ -z "$TARGET_DIR" ]]; then
   if [[ "$SCRIPT_NAME" == "install.sh" || "$SCRIPT_NAME" == "bash" ]]; then
-    echo "Usage: curl -fsSL ${RAW_INSTALL_URL} | bash -s -- /path/to/your/ios-project [--force]"
+    echo "Usage: curl -fsSL ${RAW_INSTALL_URL} | bash -s -- /path/to/your/ios-project [options]"
   else
-    echo "Usage: ${SCRIPT_NAME} /path/to/your/ios-project [--force]"
+    echo "Usage: ${SCRIPT_NAME} /path/to/your/ios-project [options]"
   fi
+  echo "Options: --force --project NAME.xcodeproj --workspace NAME.xcworkspace --scheme NAME --app-name NAME --skip-generate-env"
   exit 1
 fi
 
@@ -62,4 +62,4 @@ if [[ -z "$EXTRACTED_DIR" || ! -d "$EXTRACTED_DIR/ios-newapp-template" ]]; then
   exit 1
 fi
 
-bash "$EXTRACTED_DIR/ios-newapp-template/scripts/create_project.sh" "$TARGET_DIR" "$FORCE_FLAG"
+bash "$EXTRACTED_DIR/ios-newapp-template/scripts/create_project.sh" "$@"

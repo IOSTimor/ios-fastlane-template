@@ -36,15 +36,18 @@ brew install --formula https://raw.githubusercontent.com/IOSTimor/ios-fastlane-t
 ios-fastlane-template /path/to/your/ios-project
 ```
 
+If you want the more standard `brew tap ... && brew install ...` flow later, see [docs/homebrew_tap.md](/Users/cx/Desktop/ios-fastlane-template/docs/homebrew_tap.md).
+
 Then inside your target iOS project:
 
 ```bash
-cp .env.example .env
 fastlane lanes
 fastlane ios validate_setup
 fastlane ios precheck_assets
 fastlane ios local_build scheme:"MyApp" export_method:"development"
 ```
+
+The installer creates `.env` automatically when the target project does not already have one.
 
 ### Core Workflows
 
@@ -78,6 +81,16 @@ ios-fastlane-template /path/to/your/ios-project --force
 ```
 
 The installer refuses to overwrite an existing `fastlane/` setup unless you explicitly pass `--force` or `FORCE_OVERWRITE=true`.
+
+If detection is ambiguous, set the values explicitly:
+
+```bash
+ios-fastlane-template /path/to/your/ios-project \
+  --project MyApp.xcodeproj \
+  --workspace MyApp.xcworkspace \
+  --scheme MyApp \
+  --app-name MyApp
+```
 
 ### Minimum Required Inputs
 
@@ -174,6 +187,7 @@ fastlane ios submit_review \
 - Onboarding: [docs/fastlane_ios_onboarding_guide.md](/Users/cx/Desktop/ios-fastlane-template/docs/fastlane_ios_onboarding_guide.md)
 - FAQ / Troubleshooting: [docs/troubleshooting.md](/Users/cx/Desktop/ios-fastlane-template/docs/troubleshooting.md)
 - Release notes draft: [docs/releases/v1.1.0.md](/Users/cx/Desktop/ios-fastlane-template/docs/releases/v1.1.0.md)
+- Homebrew tap notes: [docs/homebrew_tap.md](/Users/cx/Desktop/ios-fastlane-template/docs/homebrew_tap.md)
 - Contributing: [CONTRIBUTING.md](/Users/cx/Desktop/ios-fastlane-template/CONTRIBUTING.md)
 - Security: [SECURITY.md](/Users/cx/Desktop/ios-fastlane-template/SECURITY.md)
 
@@ -211,15 +225,18 @@ brew install --formula https://raw.githubusercontent.com/IOSTimor/ios-fastlane-t
 ios-fastlane-template /path/to/your/ios-project
 ```
 
+如果后续要做标准 `brew tap` 方式，可参考 [docs/homebrew_tap.md](/Users/cx/Desktop/ios-fastlane-template/docs/homebrew_tap.md)。
+
 然后进入目标 iOS 工程：
 
 ```bash
-cp .env.example .env
 fastlane lanes
 fastlane ios validate_setup
 fastlane ios precheck_assets
 fastlane ios local_build scheme:"MyApp" export_method:"development"
 ```
+
+如果目标工程还没有 `.env`，安装脚本会自动创建。
 
 ### 核心工作流
 
@@ -253,6 +270,16 @@ ios-fastlane-template /path/to/your/ios-project --force
 ```
 
 安装脚本默认不会覆盖已有 `fastlane/`，只有显式传 `--force` 或设置 `FORCE_OVERWRITE=true` 才会覆盖。
+
+如果自动探测不适合你的工程，也可以手动指定：
+
+```bash
+ios-fastlane-template /path/to/your/ios-project \
+  --project MyApp.xcodeproj \
+  --workspace MyApp.xcworkspace \
+  --scheme MyApp \
+  --app-name MyApp
+```
 
 ### 最少要填的配置
 
@@ -349,5 +376,6 @@ fastlane ios submit_review \
 - 上手指南: [docs/fastlane_ios_onboarding_guide.md](/Users/cx/Desktop/ios-fastlane-template/docs/fastlane_ios_onboarding_guide.md)
 - FAQ / 故障排查: [docs/troubleshooting.md](/Users/cx/Desktop/ios-fastlane-template/docs/troubleshooting.md)
 - Release 草稿: [docs/releases/v1.1.0.md](/Users/cx/Desktop/ios-fastlane-template/docs/releases/v1.1.0.md)
+- Homebrew Tap 说明: [docs/homebrew_tap.md](/Users/cx/Desktop/ios-fastlane-template/docs/homebrew_tap.md)
 - 参与贡献: [CONTRIBUTING.md](/Users/cx/Desktop/ios-fastlane-template/CONTRIBUTING.md)
 - 安全策略: [SECURITY.md](/Users/cx/Desktop/ios-fastlane-template/SECURITY.md)

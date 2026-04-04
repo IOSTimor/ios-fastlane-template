@@ -2,8 +2,13 @@
 
 set -euo pipefail
 
-TARGET_DIR=${1:-}
+TARGET_DIR=""
 FORCE_OVERWRITE=${FORCE_OVERWRITE:-false}
+GENERATE_ENV=${GENERATE_ENV:-true}
+PROJECT_OVERRIDE=${PROJECT_OVERRIDE:-}
+WORKSPACE_OVERRIDE=${WORKSPACE_OVERRIDE:-}
+SCHEME_OVERRIDE=${SCHEME_OVERRIDE:-}
+APP_NAME_OVERRIDE=${APP_NAME_OVERRIDE:-}
 
 bool_is_true() {
   local raw=${1:-false}
@@ -24,17 +29,53 @@ portable_sed_in_place() {
   fi
 }
 
-detect_single_match() {
+usage() {
+  cat <<'EOF'
+Usage:
+  bash scripts/create_project.sh /absolute/or/relative/path/to/ios-project [options]
+
+Options:
+  --force                    Overwrite an existing fastlane setup
+  --generate-env             Create .env from .env.example when missing (default)
+  --skip-generate-env        Do not create .env automatically
+  --project NAME.xcodeproj   Explicitly set the project default
+  --workspace NAME.xcworkspace
+                             Explicitly set the workspace default
+  --scheme NAME              Explicitly set the default scheme
+  --app-name NAME            Explicitly set the default app name
+EOF
+}
+
+collect_matches() {
   local target_dir=$1
   local pattern=$2
-  local first_match
-  local second_match
 
-  first_match=$(find "$target_dir" -maxdepth 2 -name "$pattern" | sort | head -n 1)
-  second_match=$(find "$target_dir" -maxdepth 2 -name "$pattern" | sort | sed -n '2p')
+  find "$target_dir" -maxdepth 2 -name "$pattern" | sort
+}
 
-  if [[ -n "$first_match" && -z "$second_match" ]]; then
-    basename "$first_match"
+pick_single_match() {
+  local matches=$1
+  local count
+
+  count=$(printf '%s\n' "$matches" | sed '/^$/d' | wc -l | tr -d ' ')
+  if [[ "$count" == "1" ]]; then
+    printf '%s\n' "$matches" | sed '/^$/d' | head -n 1 | xargs basename
+  fi
+}
+
+print_match_warning() {
+  local label=$1
+  local matches=$2
+  local option_name=$3
+  local count
+
+  count=$(printf '%s\n' "$matches" | sed '/^$/d' | wc -l | tr -d ' ')
+  if [[ "$count" -gt 1 ]]; then
+    echo "Multiple ${label}s detected. Auto-selection was skipped."
+    printf '%s\n' "$matches" | sed '/^$/d' | while read -r match; do
+      echo "  - $(basename "$match")"
+    done
+    echo "Set ${option_name} explicitly and re-run if needed."
   fi
 }
 
@@ -46,12 +87,10 @@ infer_scheme_from_project() {
   fi
 }
 
-upsert_env_value() {
+set_env_value() {
   local file_path=$1
   local key=$2
   local value=$3
-
-  [[ -n "$value" ]] || return 0
 
   if grep -q "^${key}=" "$file_path"; then
     portable_sed_in_place "s|^${key}=.*|${key}=${value}|" "$file_path"
@@ -60,13 +99,65 @@ upsert_env_value() {
   fi
 }
 
-if [[ -z "$TARGET_DIR" ]]; then
-  echo "Usage: bash scripts/create_project.sh /absolute/or/relative/path/to/ios-project [--force]"
-  exit 1
-fi
+parse_args() {
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --force)
+        FORCE_OVERWRITE=true
+        shift
+        ;;
+      --generate-env)
+        GENERATE_ENV=true
+        shift
+        ;;
+      --skip-generate-env)
+        GENERATE_ENV=false
+        shift
+        ;;
+      --project)
+        PROJECT_OVERRIDE=${2:-}
+        shift 2
+        ;;
+      --workspace)
+        WORKSPACE_OVERRIDE=${2:-}
+        shift 2
+        ;;
+      --scheme)
+        SCHEME_OVERRIDE=${2:-}
+        shift 2
+        ;;
+      --app-name)
+        APP_NAME_OVERRIDE=${2:-}
+        shift 2
+        ;;
+      -h|--help)
+        usage
+        exit 0
+        ;;
+      -*)
+        echo "Unknown option: $1"
+        usage
+        exit 1
+        ;;
+      *)
+        if [[ -z "$TARGET_DIR" ]]; then
+          TARGET_DIR=$1
+          shift
+        else
+          echo "Unexpected argument: $1"
+          usage
+          exit 1
+        fi
+        ;;
+    esac
+  done
+}
 
-if [[ ${2:-} == "--force" ]]; then
-  FORCE_OVERWRITE=true
+parse_args "$@"
+
+if [[ -z "$TARGET_DIR" ]]; then
+  usage
+  exit 1
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -74,7 +165,7 @@ TEMPLATE_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 TARGET_DIR="$(cd "$TARGET_DIR" 2>/dev/null && pwd || true)"
 
 if [[ -z "$TARGET_DIR" || ! -d "$TARGET_DIR" ]]; then
-  echo "Target directory does not exist: ${1}"
+  echo "Target directory does not exist"
   exit 1
 fi
 
@@ -87,9 +178,13 @@ if [[ -e "$TARGET_DIR/fastlane/Fastfile" || -e "$TARGET_DIR/fastlane/Appfile" ||
   fi
 fi
 
-DETECTED_WORKSPACE=$(detect_single_match "$TARGET_DIR" "*.xcworkspace" || true)
-DETECTED_PROJECT=$(detect_single_match "$TARGET_DIR" "*.xcodeproj" || true)
-DETECTED_SCHEME=$(infer_scheme_from_project "${DETECTED_PROJECT}")
+PROJECT_MATCHES=$(collect_matches "$TARGET_DIR" "*.xcodeproj")
+WORKSPACE_MATCHES=$(collect_matches "$TARGET_DIR" "*.xcworkspace")
+
+DETECTED_PROJECT=${PROJECT_OVERRIDE:-$(pick_single_match "$PROJECT_MATCHES")}
+DETECTED_WORKSPACE=${WORKSPACE_OVERRIDE:-$(pick_single_match "$WORKSPACE_MATCHES")}
+DETECTED_SCHEME=${SCHEME_OVERRIDE:-$(infer_scheme_from_project "${DETECTED_PROJECT}")}
+DETECTED_APP_NAME=${APP_NAME_OVERRIDE:-${DETECTED_SCHEME:-}}
 
 mkdir -p "$TARGET_DIR/fastlane"
 mkdir -p "$TARGET_DIR/fastlane/metadata"
@@ -109,12 +204,21 @@ if [[ ! -f "$TARGET_DIR/Makefile" ]]; then
   cp "$TEMPLATE_DIR/Makefile" "$TARGET_DIR/Makefile"
 fi
 
-upsert_env_value "$TARGET_DIR/fastlane/.env.default" "WORKSPACE" "${DETECTED_WORKSPACE:-}"
-upsert_env_value "$TARGET_DIR/fastlane/.env.default" "PROJECT" "${DETECTED_PROJECT:-}"
-upsert_env_value "$TARGET_DIR/fastlane/.env.default" "SCHEME" "${DETECTED_SCHEME:-}"
-upsert_env_value "$TARGET_DIR/fastlane/.env.default" "APP_NAME" "${DETECTED_SCHEME:-}"
+set_env_value "$TARGET_DIR/fastlane/.env.default" "WORKSPACE" "${DETECTED_WORKSPACE:-}"
+set_env_value "$TARGET_DIR/fastlane/.env.default" "PROJECT" "${DETECTED_PROJECT:-}"
+set_env_value "$TARGET_DIR/fastlane/.env.default" "SCHEME" "${DETECTED_SCHEME:-}"
+set_env_value "$TARGET_DIR/fastlane/.env.default" "APP_NAME" "${DETECTED_APP_NAME:-}"
+
+if bool_is_true "$GENERATE_ENV" && [[ ! -f "$TARGET_DIR/.env" ]]; then
+  cp "$TARGET_DIR/.env.example" "$TARGET_DIR/.env"
+  set_env_value "$TARGET_DIR/.env" "PROJECT" "${DETECTED_PROJECT:-}"
+  set_env_value "$TARGET_DIR/.env" "WORKSPACE" "${DETECTED_WORKSPACE:-}"
+  set_env_value "$TARGET_DIR/.env" "SCHEME" "${DETECTED_SCHEME:-}"
+  set_env_value "$TARGET_DIR/.env" "APP_NAME" "${DETECTED_APP_NAME:-}"
+fi
 
 echo "Fastlane template installed into $TARGET_DIR"
+
 if [[ -n "${DETECTED_WORKSPACE:-}" ]]; then
   echo "Detected workspace: $DETECTED_WORKSPACE"
 fi
@@ -124,9 +228,23 @@ fi
 if [[ -n "${DETECTED_SCHEME:-}" ]]; then
   echo "Detected default scheme: $DETECTED_SCHEME"
 fi
+if [[ -n "${DETECTED_APP_NAME:-}" ]]; then
+  echo "Detected app name: $DETECTED_APP_NAME"
+fi
+
+print_match_warning "project" "$PROJECT_MATCHES" "--project"
+print_match_warning "workspace" "$WORKSPACE_MATCHES" "--workspace"
+
+if bool_is_true "$GENERATE_ENV"; then
+  if [[ -f "$TARGET_DIR/.env" ]]; then
+    echo "Prepared .env in the target project"
+  fi
+else
+  echo "Skipped automatic .env generation"
+fi
+
 echo "Next:"
-echo "  1. Copy .env.example to .env and fill project-specific values"
-echo "  2. Review fastlane/.env.default inferred defaults"
-echo "  3. Run 'fastlane lanes', 'fastlane ios validate_setup', and 'fastlane ios precheck_assets'"
-echo "  4. Run 'fastlane ios local_build'"
-echo "  5. Optional: run 'bundle install' and switch to 'bundle exec fastlane ...'"
+echo "  1. Review .env and fastlane/.env.default"
+echo "  2. Run 'fastlane lanes', 'fastlane ios validate_setup', and 'fastlane ios precheck_assets'"
+echo "  3. Run 'fastlane ios local_build'"
+echo "  4. Optional: run 'bundle install' and switch to 'bundle exec fastlane ...'"

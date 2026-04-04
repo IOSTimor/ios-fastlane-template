@@ -42,11 +42,27 @@ jobs:
           bash ios-newapp-template/scripts/create_project.sh "$tmpdir/DemoApp"
           grep -q '^SCHEME=DemoApp$' "$tmpdir/DemoApp/fastlane/.env.default"
           grep -q '^APP_NAME=DemoApp$' "$tmpdir/DemoApp/fastlane/.env.default"
+          grep -q '^SCHEME=DemoApp$' "$tmpdir/DemoApp/.env"
+          grep -q '^APP_NAME=DemoApp$' "$tmpdir/DemoApp/.env"
           if bash ios-newapp-template/scripts/create_project.sh "$tmpdir/DemoApp"; then
             echo "Installer overwrote an existing fastlane setup unexpectedly"
             exit 1
           fi
           bash ios-newapp-template/scripts/create_project.sh "$tmpdir/DemoApp" --force
+
+      - name: Integration test multi-project detection
+        run: |
+          tmpdir="$(mktemp -d)"
+          mkdir -p "$tmpdir/MultiApp/AppOne.xcodeproj"
+          mkdir -p "$tmpdir/MultiApp/AppTwo.xcodeproj"
+          bash ios-newapp-template/scripts/create_project.sh "$tmpdir/MultiApp" > "$tmpdir/output.txt"
+          if grep -q '^PROJECT=' "$tmpdir/MultiApp/fastlane/.env.default"; then
+            echo "Project should not have been auto-selected in multi-project mode"
+            exit 1
+          fi
+          grep -q 'Multiple projects detected' "$tmpdir/output.txt"
+          bash ios-newapp-template/scripts/create_project.sh "$tmpdir/MultiApp" --force --project AppOne.xcodeproj --scheme AppOne --app-name AppOne
+          grep -q '^PROJECT=AppOne.xcodeproj$' "$tmpdir/MultiApp/fastlane/.env.default"
 
       - name: Integration test curl installer
         run: |
@@ -61,6 +77,7 @@ jobs:
           LOCAL_ARCHIVE_PATH="$archive" bash scripts/install.sh "$tmpdir/TargetApp"
           grep -q '^SCHEME=TargetApp$' "$tmpdir/TargetApp/fastlane/.env.default"
           grep -q '^APP_NAME=TargetApp$' "$tmpdir/TargetApp/fastlane/.env.default"
+          grep -q '^SCHEME=TargetApp$' "$tmpdir/TargetApp/.env"
 
       - name: Validate fastlane lanes
         working-directory: ios-newapp-template

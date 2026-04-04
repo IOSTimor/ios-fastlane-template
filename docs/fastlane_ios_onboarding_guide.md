@@ -58,13 +58,22 @@ brew install --formula https://raw.githubusercontent.com/IOSTimor/ios-fastlane-t
 ios-fastlane-template /path/to/your/ios-project
 ```
 
+If you later want a dedicated Homebrew tap workflow, see [homebrew_tap.md](/Users/cx/Desktop/ios-fastlane-template/docs/homebrew_tap.md).
+
 Then in the target project:
 
-```bash
-cp .env.example .env
-```
+`.env` will be created automatically when missing.
 
 If the target project already has a `fastlane/` setup, the installer will stop instead of overwriting it. Use `--force` only when you intentionally want to replace the template files.
+
+If your repository contains multiple `.xcodeproj` or `.xcworkspace` files, pass explicit values:
+
+```bash
+ios-fastlane-template /path/to/your/ios-project \
+  --project MyApp.xcodeproj \
+  --workspace MyApp.xcworkspace \
+  --scheme MyApp
+```
 
 Optional but recommended for teams that want pinned Ruby dependencies:
 
