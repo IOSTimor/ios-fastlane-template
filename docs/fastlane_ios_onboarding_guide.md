@@ -218,6 +218,7 @@ Rules:
 - do not hardcode metadata content in `Fastfile`
 - commit text metadata when it is safe to share
 - keep screenshots local or commit only sanitized examples
+- the template already includes `en-US` and `zh-Hans` sample metadata files that should be rewritten per app
 
 If there are no metadata or screenshot files, the relevant upload step is skipped unless you explicitly force it.
 

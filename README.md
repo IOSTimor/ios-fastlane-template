@@ -15,7 +15,7 @@ This repository focuses on release automation only. It does not generate an Xcod
 - Project-root `.env.example`
 - Safe defaults in `fastlane/.env.default`
 - Optional `Gemfile` for pinned fastlane usage
-- Metadata and screenshot folder structure
+- Metadata and screenshot folder structure with `en-US` and `zh-Hans` sample metadata
 - Installer script for existing iOS projects
 - Workflows for local IPA build, TestFlight-only upload, review submission, existing app release, new app first release, and metadata-only upload
 
@@ -193,7 +193,7 @@ This repository is ready to publish as a reusable template, but actual release e
 - 项目根目录 `.env.example`
 - 可提交的安全默认值 `fastlane/.env.default`
 - 可选的 `Gemfile`
-- `metadata` / `screenshots` 目录结构
+- 自带 `en-US` 和 `zh-Hans` 示例内容的 `metadata` / `screenshots` 目录结构
 - 安装到现有 iOS 工程的脚本
 - 支持本地 IPA、已有 App 发布、新 App 首发、仅上传元数据
 - 支持本地 IPA、仅上传 TestFlight、提交审核、已有 App 发布、新 App 首发、仅上传元数据

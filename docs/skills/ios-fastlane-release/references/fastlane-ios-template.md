@@ -187,3 +187,5 @@ fastlane ios submit_review \
 5. run `fastlane ios precheck_assets`
 6. run `xcodebuild -list`
 7. run `fastlane ios local_build`
+
+The repository template includes starter metadata content for `en-US` and `zh-Hans`. Treat it as editable placeholder content, not production copy.

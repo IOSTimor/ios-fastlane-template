@@ -1,0 +1,11 @@
+Describe your app in 2-4 short paragraphs focused on user value.
+
+Example:
+YourApp helps people capture information, organize tasks, and stay on top of daily work from one simple interface.
+
+Use this description to explain what problem the app solves, who it is for, and what makes it useful. Keep the language specific and practical instead of generic marketing filler.
+
+Suggested structure:
+- Paragraph 1: what the app does
+- Paragraph 2: the core workflows or standout features
+- Paragraph 3: who benefits from it and why

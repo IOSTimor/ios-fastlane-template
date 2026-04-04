@@ -1,0 +1,10 @@
+What is new in this version:
+
+- Summarize the most important user-facing improvements
+- Mention bug fixes only if they matter to users
+- Keep release notes short and readable
+
+Example:
+- Improved onboarding for first-time users
+- Faster sync and better reliability across devices
+- Fixed several issues affecting account setup
