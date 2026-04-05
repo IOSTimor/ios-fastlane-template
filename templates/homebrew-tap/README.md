@@ -1,11 +1,11 @@
-# homebrew-tap
+# homebrew-ios-release
 
 Homebrew tap for `ios-fastlane-template`.
 
 ## Install
 
 ```bash
-brew tap IOSTimor/tap https://github.com/IOSTimor/homebrew-tap
+brew tap IOSTimor/ios-release https://github.com/IOSTimor/homebrew-ios-release
 brew install ios-fastlane-template
 ```
 
@@ -26,7 +26,7 @@ The main repository already provides the source formula:
 You can scaffold this tap repo locally from the main repository with:
 
 ```bash
-bash scripts/prepare_homebrew_tap_repo.sh /path/to/homebrew-tap IOSTimor homebrew-tap
+bash scripts/prepare_homebrew_tap_repo.sh /path/to/homebrew-ios-release IOSTimor homebrew-ios-release
 ```
 
 ## Release Workflow
@@ -39,8 +39,8 @@ When `scripts/install.sh` changes in the main repository:
 4. test with:
 
 ```bash
-brew untap IOSTimor/tap || true
-brew tap IOSTimor/tap https://github.com/IOSTimor/homebrew-tap
+brew untap IOSTimor/ios-release || true
+brew tap IOSTimor/ios-release https://github.com/IOSTimor/homebrew-ios-release
 brew reinstall ios-fastlane-template
 ios-fastlane-template
 ```

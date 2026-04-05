@@ -32,11 +32,12 @@ curl -fsSL https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main
 Or install a local command with Homebrew:
 
 ```bash
-brew install --formula https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/Formula/ios-fastlane-template.rb
+brew tap IOSTimor/ios-release
+brew install ios-fastlane-template
 ios-fastlane-template /path/to/your/ios-project
 ```
 
-If you want the more standard `brew tap ... && brew install ...` flow later, see [docs/homebrew_tap.md](/Users/cx/Desktop/ios-fastlane-template/docs/homebrew_tap.md).
+This assumes the tap repository is published as `IOSTimor/homebrew-ios-release`. See [docs/homebrew_tap.md](/Users/cx/Desktop/ios-fastlane-template/docs/homebrew_tap.md).
 
 Then inside your target iOS project:
 
@@ -223,11 +224,12 @@ curl -fsSL https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main
 或者先通过 Homebrew 安装命令：
 
 ```bash
-brew install --formula https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/Formula/ios-fastlane-template.rb
+brew tap IOSTimor/ios-release
+brew install ios-fastlane-template
 ios-fastlane-template /path/to/your/ios-project
 ```
 
-如果后续要做标准 `brew tap` 方式，可参考 [docs/homebrew_tap.md](/Users/cx/Desktop/ios-fastlane-template/docs/homebrew_tap.md)。
+这要求 tap 仓库以 `IOSTimor/homebrew-ios-release` 发布，详情见 [docs/homebrew_tap.md](/Users/cx/Desktop/ios-fastlane-template/docs/homebrew_tap.md)。
 
 然后进入目标 iOS 工程：
 

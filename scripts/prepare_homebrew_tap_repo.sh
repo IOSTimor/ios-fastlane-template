@@ -4,7 +4,7 @@ set -euo pipefail
 
 TARGET_DIR=${1:-}
 TAP_OWNER=${2:-IOSTimor}
-TAP_REPO=${3:-homebrew-tap}
+TAP_REPO=${3:-homebrew-ios-release}
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
@@ -13,9 +13,11 @@ SOURCE_FORMULA="${REPO_ROOT}/Formula/ios-fastlane-template.rb"
 TARGET_DIR_ABS=""
 
 if [[ -z "$TARGET_DIR" ]]; then
-  echo "Usage: bash scripts/prepare_homebrew_tap_repo.sh /path/to/homebrew-tap [owner] [repo]"
+  echo "Usage: bash scripts/prepare_homebrew_tap_repo.sh /path/to/homebrew-ios-release [owner] [repo]"
   exit 1
 fi
+
+TAP_ALIAS="${TAP_REPO#homebrew-}"
 
 mkdir -p "$TARGET_DIR"
 TARGET_DIR_ABS="$(cd "$TARGET_DIR" && pwd)"
@@ -29,11 +31,13 @@ cp "$TEMPLATE_DIR/.gitignore" "$TARGET_DIR_ABS/.gitignore"
 cp "$TEMPLATE_DIR/.github/workflows/test-formula.yml" "$TARGET_DIR_ABS/.github/workflows/test-formula.yml"
 
 if sed --version >/dev/null 2>&1; then
-  sed -i "s|IOSTimor/homebrew-tap|${TAP_OWNER}/${TAP_REPO}|g" "$TARGET_DIR_ABS/README.md"
-  sed -i "s|IOSTimor/tap|${TAP_OWNER}/tap|g" "$TARGET_DIR_ABS/README.md"
+  sed -i "s|IOSTimor/homebrew-ios-release|${TAP_OWNER}/${TAP_REPO}|g" "$TARGET_DIR_ABS/README.md"
+  sed -i "s|IOSTimor/ios-release|${TAP_OWNER}/${TAP_ALIAS}|g" "$TARGET_DIR_ABS/README.md"
+  sed -i "s|homebrew-ios-release|${TAP_REPO}|g" "$TARGET_DIR_ABS/README.md"
 else
-  sed -i '' "s|IOSTimor/homebrew-tap|${TAP_OWNER}/${TAP_REPO}|g" "$TARGET_DIR_ABS/README.md"
-  sed -i '' "s|IOSTimor/tap|${TAP_OWNER}/tap|g" "$TARGET_DIR_ABS/README.md"
+  sed -i '' "s|IOSTimor/homebrew-ios-release|${TAP_OWNER}/${TAP_REPO}|g" "$TARGET_DIR_ABS/README.md"
+  sed -i '' "s|IOSTimor/ios-release|${TAP_OWNER}/${TAP_ALIAS}|g" "$TARGET_DIR_ABS/README.md"
+  sed -i '' "s|homebrew-ios-release|${TAP_REPO}|g" "$TARGET_DIR_ABS/README.md"
 fi
 
 echo "Prepared Homebrew tap scaffold at: $TARGET_DIR_ABS"
@@ -47,4 +51,4 @@ echo "Next:"
 echo "  1. Create the ${TAP_OWNER}/${TAP_REPO} repository if it does not exist yet"
 echo "  2. Review README.md and Formula/ios-fastlane-template.rb"
 echo "  3. Commit and push the tap repository"
-echo "  4. Test with: brew tap ${TAP_OWNER}/tap https://github.com/${TAP_OWNER}/${TAP_REPO}"
+echo "  4. Test with: brew tap ${TAP_OWNER}/${TAP_ALIAS} https://github.com/${TAP_OWNER}/${TAP_REPO}"

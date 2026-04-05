@@ -6,25 +6,27 @@ This repository already supports direct formula installation:
 brew install --formula https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/Formula/ios-fastlane-template.rb
 ```
 
-If you want the more standard tap flow:
+For a shorter and clearer Homebrew experience, publish a dedicated tap repository named `homebrew-ios-release`.
+
+The recommended user-facing flow then becomes:
 
 ```bash
-brew tap IOSTimor/tap
+brew tap IOSTimor/ios-release
 brew install ios-fastlane-template
 ```
 
-publish the formula in a dedicated tap repository:
+That corresponds to this tap repository:
 
-- repository name: `homebrew-tap`
+- repository name: `homebrew-ios-release`
 - formula path: `Formula/ios-fastlane-template.rb`
 
 ## Suggested flow
 
-1. Create `IOSTimor/homebrew-tap`
+1. Create or rename the tap repository to `IOSTimor/homebrew-ios-release`
 2. Generate the tap scaffold locally:
 
 ```bash
-bash scripts/prepare_homebrew_tap_repo.sh /path/to/homebrew-tap IOSTimor homebrew-tap
+bash scripts/prepare_homebrew_tap_repo.sh /path/to/homebrew-ios-release IOSTimor homebrew-ios-release
 ```
 
 3. Commit the generated files into the tap repository
@@ -32,7 +34,7 @@ bash scripts/prepare_homebrew_tap_repo.sh /path/to/homebrew-tap IOSTimor homebre
 5. Test the tap locally
 
 ```bash
-brew tap IOSTimor/tap https://github.com/IOSTimor/homebrew-tap
+brew tap IOSTimor/ios-release https://github.com/IOSTimor/homebrew-ios-release
 brew install ios-fastlane-template
 ios-fastlane-template
 ```
@@ -63,5 +65,5 @@ based on the current hash of:
 To generate the tap repository skeleton itself, use:
 
 ```bash
-bash scripts/prepare_homebrew_tap_repo.sh /path/to/homebrew-tap IOSTimor homebrew-tap
+bash scripts/prepare_homebrew_tap_repo.sh /path/to/homebrew-ios-release IOSTimor homebrew-ios-release
 ```
