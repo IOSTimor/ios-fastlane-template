@@ -16,7 +16,7 @@ class IosFastlaneTemplate < Formula
       export REPO_OWNER="IOSTimor"
       export REPO_NAME="ios-fastlane-template"
       export REPO_REF="main"
-      exec "#{libexec}/install.sh" "$@"
+      exec bash "#{libexec}/install.sh" "$@"
     EOS
   end
 
