@@ -10,6 +10,14 @@ The format is based on Keep a Changelog, and this repository follows Semantic Ve
 
 - Placeholder for upcoming changes
 
+## [1.2.1] - 2026-04-05
+
+### Fixed
+
+- Homebrew formula now pins to a tagged installer script instead of the moving `main` branch
+- Homebrew CLI wrapper now displays the correct `ios-fastlane-template` usage text
+- Tap-based Homebrew installation is now stable against raw GitHub branch cache drift
+
 ## [1.2.0] - 2026-04-04
 
 ### Added

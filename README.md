@@ -186,7 +186,7 @@ fastlane ios submit_review \
 
 - Onboarding: [docs/fastlane_ios_onboarding_guide.md](/Users/cx/Desktop/ios-fastlane-template/docs/fastlane_ios_onboarding_guide.md)
 - FAQ / Troubleshooting: [docs/troubleshooting.md](/Users/cx/Desktop/ios-fastlane-template/docs/troubleshooting.md)
-- Release notes draft: [docs/releases/v1.2.0.md](/Users/cx/Desktop/ios-fastlane-template/docs/releases/v1.2.0.md)
+- Release notes draft: [docs/releases/v1.2.1.md](/Users/cx/Desktop/ios-fastlane-template/docs/releases/v1.2.1.md)
 - Homebrew tap notes: [docs/homebrew_tap.md](/Users/cx/Desktop/ios-fastlane-template/docs/homebrew_tap.md)
 - Tap repo templates: [templates/homebrew-tap/README.md](/Users/cx/Desktop/ios-fastlane-template/templates/homebrew-tap/README.md)
 - Tap repo scaffold script: [scripts/prepare_homebrew_tap_repo.sh](/Users/cx/Desktop/ios-fastlane-template/scripts/prepare_homebrew_tap_repo.sh)
@@ -377,7 +377,7 @@ fastlane ios submit_review \
 
 - 上手指南: [docs/fastlane_ios_onboarding_guide.md](/Users/cx/Desktop/ios-fastlane-template/docs/fastlane_ios_onboarding_guide.md)
 - FAQ / 故障排查: [docs/troubleshooting.md](/Users/cx/Desktop/ios-fastlane-template/docs/troubleshooting.md)
-- Release 草稿: [docs/releases/v1.2.0.md](/Users/cx/Desktop/ios-fastlane-template/docs/releases/v1.2.0.md)
+- Release 草稿: [docs/releases/v1.2.1.md](/Users/cx/Desktop/ios-fastlane-template/docs/releases/v1.2.1.md)
 - Homebrew Tap 说明: [docs/homebrew_tap.md](/Users/cx/Desktop/ios-fastlane-template/docs/homebrew_tap.md)
 - Tap 仓库模板: [templates/homebrew-tap/README.md](/Users/cx/Desktop/ios-fastlane-template/templates/homebrew-tap/README.md)
 - Tap 仓库脚手架脚本: [scripts/prepare_homebrew_tap_repo.sh](/Users/cx/Desktop/ios-fastlane-template/scripts/prepare_homebrew_tap_repo.sh)
