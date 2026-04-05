@@ -3,7 +3,7 @@ class IosFastlaneTemplate < Formula
   homepage "https://github.com/IOSTimor/ios-fastlane-template"
   url "https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/scripts/install.sh"
   version "1.2.0"
-  sha256 "d9e776f46b425e25d8781643abac8ffd8d62d367ae46d112a4ed2b511542a733"
+  sha256 "b8c076530d1453cfa06d437a3a5edf304198c417d407ae193aa9c02a65164d00"
   license "MIT"
 
   depends_on "bash"
@@ -16,6 +16,7 @@ class IosFastlaneTemplate < Formula
       export REPO_OWNER="IOSTimor"
       export REPO_NAME="ios-fastlane-template"
       export REPO_REF="main"
+      export SCRIPT_NAME_OVERRIDE="ios-fastlane-template"
       exec bash "#{libexec}/install.sh" "$@"
     EOS
   end
