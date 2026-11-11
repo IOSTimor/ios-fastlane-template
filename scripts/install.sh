@@ -2,9 +2,28 @@
 
 set -euo pipefail
 
+MODE=install
+if [[ "${1:-}" == "build" ]]; then
+  MODE=build
+  shift
+fi
+
+# A repository checkout already has the builder; avoid downloading or installing a template.
+INSTALL_SOURCE=${BASH_SOURCE[0]:-}
+if [[ "$MODE" == "build" && -n "$INSTALL_SOURCE" && -f "$INSTALL_SOURCE" ]]; then
+  SOURCE_DIR="$(cd "$(dirname "$INSTALL_SOURCE")" && pwd)"
+  if [[ -f "$SOURCE_DIR/build_local.rb" ]]; then
+    exec ruby "$SOURCE_DIR/build_local.rb" "$@"
+  fi
+fi
+
 TARGET_DIR=${1:-}
+if [[ "$MODE" == "build" && -z "$TARGET_DIR" ]]; then
+  TARGET_DIR=.
+fi
 if [[ "$TARGET_DIR" == "--help" || "$TARGET_DIR" == "-h" ]]; then
   echo "Usage: ios-fastlane-template /path/to/your/ios-project [options]"
+  echo "Build: ios-fastlane-template build [PROJECT_DIRECTORY] [--scheme NAME] [--dry-run]"
   echo "Options: --force --project PATH --workspace PATH --scheme NAME --app-name NAME --skip-generate-env"
   exit 0
 fi
@@ -68,4 +87,12 @@ if [[ -z "$EXTRACTED_DIR" || ! -d "$EXTRACTED_DIR/ios-newapp-template" ]]; then
   exit 1
 fi
 
-bash "$EXTRACTED_DIR/ios-newapp-template/scripts/create_project.sh" "$@"
+if [[ "$MODE" == "build" ]]; then
+  if [[ ! -f "$EXTRACTED_DIR/scripts/build_local.rb" ]]; then
+    echo "This template version does not include the one-command builder" >&2
+    exit 1
+  fi
+  ruby "$EXTRACTED_DIR/scripts/build_local.rb" "$@"
+else
+  bash "$EXTRACTED_DIR/ios-newapp-template/scripts/create_project.sh" "$@"
+fi

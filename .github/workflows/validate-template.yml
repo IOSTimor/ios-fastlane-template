@@ -26,6 +26,7 @@ jobs:
         run: bundle install
       - name: Validate Ruby syntax
         run: |
+          ruby -c scripts/build_local.rb
           ruby -c ios-newapp-template/fastlane/Fastfile
           ruby -c ios-newapp-template/fastlane/Appfile
           ruby -c Formula/ios-fastlane-template.rb

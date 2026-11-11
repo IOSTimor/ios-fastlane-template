@@ -8,6 +8,8 @@ The format is based on Keep a Changelog, and this repository follows Semantic Ve
 
 ### Added
 
+- One-command local IPA builder with real Xcode scheme/signing discovery, workspace preference, interactive selection, dry-run and isolated fastlane execution.
+
 - Load generated configuration from `fastlane/.env`, with one-time legacy root `.env` import and Git ignore rules.
 - Preserve existing metadata, screenshots and local environment files during forced installation.
 - Preserve spaces and nested paths in project detection; exclude Pods and internal project workspaces.

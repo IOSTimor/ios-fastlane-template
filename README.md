@@ -21,6 +21,18 @@ This repository focuses on release automation only. It does not generate an Xcod
 - Install the template through `git clone`, `curl | bash`, or Homebrew
 - Reduce setup mistakes with asset prechecks and safer installer behavior
 
+### One-command local IPA (source checkout)
+
+From this repository's root, build an existing iOS app without installing the template or filling `.env`:
+
+```bash
+bash scripts/install.sh build /path/to/your/ios-project
+```
+
+The helper prefers an app workspace, reads real schemes and signing settings from Xcode, and exports to the app's `build/` directory. It prompts if several apps are possible; use `--non-interactive --scheme MyApp` in CI. If fastlane is missing and Homebrew is available, it installs fastlane. Your app's existing Fastfile and environment files are preserved. Xcode signing and project dependencies must already be configured.
+
+Preview discovery with `--dry-run`. See [the complete one-command guide](docs/one_command_ipa.md). The published Homebrew `v1.2.1` command does not include this new subcommand yet.
+
 ### Quick Start
 
 Install with `curl`:
@@ -215,6 +227,18 @@ bundle exec fastlane ios submit_review \
 - 支持 TestFlight、metadata 上传、审核提交和新应用首发
 - 支持 `git clone`、`curl | bash`、Homebrew 三种安装方式
 - 通过预检查和安全安装策略减少接入错误
+
+### 一条命令打本地 IPA（源码版）
+
+在本仓库根目录运行，无需先接入模板或填写 `.env`：
+
+```bash
+bash scripts/install.sh build /你的/iOS项目目录
+```
+
+会自动优先选择 workspace，读取 Xcode 的真实 scheme、Team 和签名配置，输出到目标项目的 `build/`。存在多个 App 时提示选择；CI 可使用 `--non-interactive --scheme MyApp`。若缺少 fastlane 且已安装 Homebrew，会自动安装 fastlane。已有 Fastfile 和环境配置不会改写，Xcode 签名及项目依赖仍需正常。
+
+添加 `--dry-run` 可先查看识别结果。详见[一键打包说明](docs/one_command_ipa.md)。已发布的 Homebrew `v1.2.1` 命令暂不包含此新子命令。
 
 ### 快速开始
 
