@@ -14,10 +14,10 @@ Use this reference when you need the concrete structure, lane layout, env strate
 ```text
 project/
 ├── Gemfile
-├── .env.example
-├── .env
 ├── Makefile
 └── fastlane/
+    ├── .env.example
+    ├── .env                 # local, ignored by Git
     ├── .env.default
     ├── Appfile
     ├── Fastfile
@@ -41,10 +41,10 @@ itc_team_id(ENV["ITC_TEAM_ID"]) if ENV["ITC_TEAM_ID"]
 
 Use two env layers:
 
-- project-root `.env.example`: documents required and optional values
+- `fastlane/.env.example`: documents required and optional values
 - `fastlane/.env.default`: stores safe committed defaults
 
-Example `.env.example`:
+Example `fastlane/.env.example`:
 
 ```dotenv
 APPLE_ID=your-apple-id@example.com
@@ -102,14 +102,14 @@ Private lanes:
 
 The repository version is the source of truth:
 
-- [`ios-newapp-template/fastlane/Fastfile`](/Users/cx/Desktop/ios-fastlane-template/ios-newapp-template/fastlane/Fastfile)
+- [`ios-newapp-template/fastlane/Fastfile`](../../../../ios-newapp-template/fastlane/Fastfile)
 
 ## Example commands
 
 Local IPA build:
 
 ```bash
-fastlane ios local_build \
+bundle exec fastlane ios local_build \
   scheme:"MyApp" \
   export_method:"development"
 ```
@@ -117,7 +117,7 @@ fastlane ios local_build \
 Release existing app:
 
 ```bash
-fastlane ios release_existing \
+bundle exec fastlane ios release_existing \
   scheme:"MyApp" \
   app_identifier:"com.example.app" \
   version:"1.0.0" \
@@ -131,7 +131,7 @@ fastlane ios release_existing \
 First release for new app:
 
 ```bash
-fastlane ios release_new \
+bundle exec fastlane ios release_new \
   create_app:true \
   scheme:"MyApp" \
   app_identifier:"com.demo.app" \
@@ -145,7 +145,7 @@ fastlane ios release_new \
 Metadata only:
 
 ```bash
-fastlane ios metadata_only \
+bundle exec fastlane ios metadata_only \
   app_identifier:"com.demo.app" \
   upload_metadata:true \
   upload_screenshots:true
@@ -154,7 +154,7 @@ fastlane ios metadata_only \
 TestFlight only:
 
 ```bash
-fastlane ios testflight_only \
+bundle exec fastlane ios testflight_only \
   scheme:"MyApp" \
   app_identifier:"com.example.app" \
   version:"1.0.0" \
@@ -164,7 +164,7 @@ fastlane ios testflight_only \
 Submit review:
 
 ```bash
-fastlane ios submit_review \
+bundle exec fastlane ios submit_review \
   app_identifier:"com.example.app" \
   upload_metadata:true \
   upload_screenshots:true
@@ -185,12 +185,12 @@ fastlane ios submit_review \
    `curl -fsSL https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/scripts/install.sh | bash -s -- /path/to/your/ios-project`
    Or install the local command with:
    `brew install --formula https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/main/Formula/ios-fastlane-template.rb`
-2. create `.env` from `.env.example`
-3. run `fastlane lanes`
-4. run `fastlane ios validate_setup`
-5. run `fastlane ios precheck_assets`
+2. create `fastlane/.env` from `fastlane/.env.example`
+3. run `bundle exec fastlane lanes`
+4. run `bundle exec fastlane ios validate_setup`
+5. run `bundle exec fastlane ios precheck_assets`
 6. run `xcodebuild -list`
-7. run `fastlane ios local_build`
+7. run `bundle exec fastlane ios local_build`
 
 The repository template includes starter metadata content for `en-US` and `zh-Hans`. Treat it as editable placeholder content, not production copy.
 

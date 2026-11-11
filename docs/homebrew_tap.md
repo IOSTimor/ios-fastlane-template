@@ -54,16 +54,18 @@ Use the helper script in this repository:
 bash scripts/update_homebrew_formula.sh 1.2.1
 ```
 
-That command updates:
+That command updates the URL, version, wrapper reference and SHA-256 in both formula copies. Publish the matching tag with those exact installer bytes before distributing the formula. It updates:
 
-- [`Formula/ios-fastlane-template.rb`](/Users/cx/Desktop/ios-fastlane-template/Formula/ios-fastlane-template.rb)
+- [`Formula/ios-fastlane-template.rb`](../Formula/ios-fastlane-template.rb)
 
 based on the current hash of:
 
-- [`scripts/install.sh`](/Users/cx/Desktop/ios-fastlane-template/scripts/install.sh)
+- [`scripts/install.sh`](../scripts/install.sh)
 
 To generate the tap repository skeleton itself, use:
 
 ```bash
 bash scripts/prepare_homebrew_tap_repo.sh /path/to/homebrew-ios-release IOSTimor homebrew-ios-release
 ```
+
+The checked-in formula remains pinned to the published `v1.2.1` installer and checksum. Its wrapper explicitly selects the tag archive, which is compatible with that installer. Local template changes are not distributed by Homebrew until a new release tag and updated tap formula are published. No release tag is created by the update helper.

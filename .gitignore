@@ -1,5 +1,7 @@
 .DS_Store
 .env
+**/.env
+**/.env.*.local
 build/
 **/fastlane/report.xml
 **/fastlane/Preview.html
@@ -9,3 +11,6 @@ build/
 *.mobileprovision
 *.p12
 *.p8
+
+__pycache__/
+*.pyc

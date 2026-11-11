@@ -3,11 +3,16 @@
 set -euo pipefail
 
 TARGET_DIR=${1:-}
+if [[ "$TARGET_DIR" == "--help" || "$TARGET_DIR" == "-h" ]]; then
+  echo "Usage: ios-fastlane-template /path/to/your/ios-project [options]"
+  echo "Options: --force --project PATH --workspace PATH --scheme NAME --app-name NAME --skip-generate-env"
+  exit 0
+fi
 
 REPO_OWNER=${REPO_OWNER:-IOSTimor}
 REPO_NAME=${REPO_NAME:-ios-fastlane-template}
 REPO_REF=${REPO_REF:-main}
-ARCHIVE_URL=${ARCHIVE_URL:-"https://codeload.github.com/${REPO_OWNER}/${REPO_NAME}/tar.gz/refs/heads/${REPO_REF}"}
+ARCHIVE_URL=${ARCHIVE_URL:-"https://codeload.github.com/${REPO_OWNER}/${REPO_NAME}/tar.gz/${REPO_REF}"}
 LOCAL_ARCHIVE_PATH=${LOCAL_ARCHIVE_PATH:-}
 SCRIPT_NAME="$(basename "$0")"
 SCRIPT_NAME=${SCRIPT_NAME_OVERRIDE:-$SCRIPT_NAME}

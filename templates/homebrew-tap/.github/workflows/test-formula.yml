@@ -24,4 +24,4 @@ jobs:
 
       - name: Verify CLI
         run: |
-          ios-fastlane-template 2>&1 | grep "Usage:"
+          brew test ios-fastlane-template

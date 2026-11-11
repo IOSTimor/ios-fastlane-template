@@ -30,7 +30,7 @@ Focus on reusable release automation:
 
 - create or update `fastlane/Appfile`
 - create or update `fastlane/Fastfile`
-- create or update a project-root `.env.example` when release credentials or shared variables need to be documented
+- create or update a `fastlane/.env.example` when release credentials or shared variables need to be documented
 - create or update `fastlane/.env.default` when safe project defaults would reduce repeated command parameters
 - define lanes for local IPA build, existing-app release, and new-app first release
 - keep project-specific differences in parameters, environment variables, metadata, and screenshots
@@ -59,7 +59,7 @@ Inspect the repository before editing anything.
 Check for:
 
 - `.xcodeproj` or `.xcworkspace`
-- existing project-root `.env.example`
+- existing `fastlane/.env.example`
 - existing `fastlane/` directory
 - existing `fastlane/Appfile`
 - existing `fastlane/Fastfile`
@@ -91,7 +91,7 @@ Keep `Appfile` minimal. Prefer environment variables for fields that vary betwee
 
 Keep `Fastfile` parameterized. Do not hardcode app names, schemes, bundle IDs, or release metadata into lanes.
 
-Generate a project-root `.env.example` that lists required and optional variables the user must fill.
+Generate a `fastlane/.env.example` that lists required and optional variables the user must fill.
 
 Generate `fastlane/.env.default` for safe project defaults such as inferred scheme, app name, language, bundle identifier, or team identifier when those are known.
 
@@ -101,7 +101,7 @@ When a repo already supports local IPA build and the user later asks for TestFli
 
 - keep the working local-build lane
 - add release lanes if missing
-- add `.env.example` and `fastlane/.env.default` if release inputs now need to be documented
+- add `fastlane/.env.example` and `fastlane/.env.default` if release inputs now need to be documented
 - add `metadata/` and `screenshots/` folders if upload flows need them
 - report only the newly required inputs instead of re-listing local-build requirements as blockers
 
@@ -123,7 +123,7 @@ If you need to report required inputs and likely blockers, read [`references/ios
 - If metadata or screenshots are missing, do not invent content. Keep fastlane configured to upload only what exists locally.
 - If the repo already has a different lane structure, adapt the pattern instead of forcing a full rewrite.
 - Treat "local build only" and "release capable" as upgrade levels of the same setup, not separate templates that require a reset.
-- `.env.example` should document release-oriented inputs without storing secrets. It is recommended for upload and release flows, but optional for local-build-only setups.
+- `fastlane/.env.example` should document release-oriented inputs without storing secrets. It is recommended for upload and release flows, but optional for local-build-only setups.
 - `fastlane/.env.default` should contain only non-sensitive defaults and placeholders that are safe to commit. It is optional when command-line parameters are sufficient.
 - Prefer repo-safe setup:
   - write files and folders
@@ -143,7 +143,7 @@ Prefer lightweight validation in this order:
 
 Useful validation commands include:
 
-- `fastlane lanes`
+- `bundle exec fastlane lanes`
 - `xcodebuild -list`
 
 Do not run destructive release commands unless the user explicitly asks for that execution.
@@ -158,7 +158,7 @@ When this skill finishes, the response should clearly separate:
 - what Apple-side or environment-side blockers remain
 - example commands to run next
 
-If `.env.example` or `fastlane/.env.default` were created, tell the user exactly which file they should fill next. Do this only when the chosen flow actually needs more values.
+If `fastlane/.env.example` or `fastlane/.env.default` were created, tell the user exactly which file they should fill next. Do this only when the chosen flow actually needs more values.
 
 Prefer a readiness summary like:
 
@@ -174,7 +174,7 @@ When you implement or refactor this workflow, the result should usually include:
 
 - a parameterized `fastlane/Appfile`
 - a reusable `fastlane/Fastfile`
-- an optional project-root `.env.example`
+- an optional `fastlane/.env.example`
 - an optional `fastlane/.env.default`
 - optional locale folders under `fastlane/metadata/`
 - optional locale folders under `fastlane/screenshots/`

@@ -37,18 +37,19 @@ brew install ios-fastlane-template
 ios-fastlane-template /path/to/your/ios-project
 ```
 
-This assumes the tap repository is published as `IOSTimor/homebrew-ios-release`. See [docs/homebrew_tap.md](/Users/cx/Desktop/ios-fastlane-template/docs/homebrew_tap.md).
+This assumes the tap repository is published as `IOSTimor/homebrew-ios-release`. See [docs/homebrew_tap.md](docs/homebrew_tap.md).
 
 Then inside your target iOS project:
 
 ```bash
-fastlane lanes
-fastlane ios validate_setup
-fastlane ios precheck_assets
-fastlane ios local_build scheme:"MyApp" export_method:"development"
+bundle install
+bundle exec fastlane lanes
+bundle exec fastlane ios validate_setup
+bundle exec fastlane ios precheck_assets
+bundle exec fastlane ios local_build scheme:"MyApp" export_method:"development"
 ```
 
-The installer creates `.env` automatically when the target project does not already have one.
+The installer creates `fastlane/.env` when missing. An existing root `.env` is imported once; edit `fastlane/.env` afterward. Existing environment files and assets are preserved, including with `--force`.
 
 ### Core Workflows
 
@@ -66,7 +67,7 @@ The installer creates `.env` automatically when the target project does not alre
 Install with `git clone`:
 
 ```bash
-git clone git@github-personal:IOSTimor/ios-fastlane-template.git
+git clone https://github.com/IOSTimor/ios-fastlane-template.git
 cd ios-fastlane-template/ios-newapp-template
 bash scripts/create_project.sh /path/to/your/ios-project
 ```
@@ -95,7 +96,7 @@ ios-fastlane-template /path/to/your/ios-project \
 
 ### Minimum Required Inputs
 
-Fill at least these values in `.env`:
+Fill at least these values in `fastlane/.env`:
 
 ```dotenv
 APP_IDENTIFIER=com.example.app
@@ -112,18 +113,20 @@ APP_STORE_ISSUER_ID=
 APP_STORE_KEY_FILE=./fastlane/AuthKey_XXXXXXX.p8
 ```
 
+`release_existing` and `release_new` upload the binary by default. Metadata and screenshots require explicit `upload_metadata:true` / `upload_screenshots:true`; replace all starter copy before opting in. For existing-build review, use `build_number` and `version` to select a specific build.
+
 ### Commands You Will Actually Use
 
 Local IPA:
 
 ```bash
-fastlane ios local_build scheme:"MyApp" export_method:"development"
+bundle exec fastlane ios local_build scheme:"MyApp" export_method:"development"
 ```
 
 Existing app release:
 
 ```bash
-fastlane ios release_existing \
+bundle exec fastlane ios release_existing \
   scheme:"MyApp" \
   app_identifier:"com.example.app" \
   version:"1.0.0" \
@@ -133,7 +136,7 @@ fastlane ios release_existing \
 TestFlight only:
 
 ```bash
-fastlane ios testflight_only \
+bundle exec fastlane ios testflight_only \
   scheme:"MyApp" \
   app_identifier:"com.example.app" \
   version:"1.0.0" \
@@ -143,7 +146,7 @@ fastlane ios testflight_only \
 Review submission:
 
 ```bash
-fastlane ios submit_review \
+bundle exec fastlane ios submit_review \
   app_identifier:"com.example.app" \
   upload_metadata:true \
   upload_screenshots:true
@@ -171,10 +174,10 @@ fastlane ios submit_review \
 │   └── troubleshooting.md
 ├── Formula/
 └── ios-newapp-template/
-    ├── .env.example
     ├── Gemfile
     ├── Makefile
     ├── fastlane/
+    │   ├── .env.example
     │   ├── .env.default
     │   ├── Appfile
     │   ├── Fastfile
@@ -185,14 +188,14 @@ fastlane ios submit_review \
 
 ### More Docs
 
-- Onboarding: [docs/fastlane_ios_onboarding_guide.md](/Users/cx/Desktop/ios-fastlane-template/docs/fastlane_ios_onboarding_guide.md)
-- FAQ / Troubleshooting: [docs/troubleshooting.md](/Users/cx/Desktop/ios-fastlane-template/docs/troubleshooting.md)
-- Release notes draft: [docs/releases/v1.2.1.md](/Users/cx/Desktop/ios-fastlane-template/docs/releases/v1.2.1.md)
-- Homebrew tap notes: [docs/homebrew_tap.md](/Users/cx/Desktop/ios-fastlane-template/docs/homebrew_tap.md)
-- Tap repo templates: [templates/homebrew-tap/README.md](/Users/cx/Desktop/ios-fastlane-template/templates/homebrew-tap/README.md)
-- Tap repo scaffold script: [scripts/prepare_homebrew_tap_repo.sh](/Users/cx/Desktop/ios-fastlane-template/scripts/prepare_homebrew_tap_repo.sh)
-- Contributing: [CONTRIBUTING.md](/Users/cx/Desktop/ios-fastlane-template/CONTRIBUTING.md)
-- Security: [SECURITY.md](/Users/cx/Desktop/ios-fastlane-template/SECURITY.md)
+- Onboarding: [docs/fastlane_ios_onboarding_guide.md](docs/fastlane_ios_onboarding_guide.md)
+- FAQ / Troubleshooting: [docs/troubleshooting.md](docs/troubleshooting.md)
+- Release notes draft: [docs/releases/v1.2.1.md](docs/releases/v1.2.1.md)
+- Homebrew tap notes: [docs/homebrew_tap.md](docs/homebrew_tap.md)
+- Tap repo templates: [templates/homebrew-tap/README.md](templates/homebrew-tap/README.md)
+- Tap repo scaffold script: [scripts/prepare_homebrew_tap_repo.sh](scripts/prepare_homebrew_tap_repo.sh)
+- Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Security: [SECURITY.md](SECURITY.md)
 
 ## 中文
 
@@ -229,18 +232,19 @@ brew install ios-fastlane-template
 ios-fastlane-template /path/to/your/ios-project
 ```
 
-这要求 tap 仓库以 `IOSTimor/homebrew-ios-release` 发布，详情见 [docs/homebrew_tap.md](/Users/cx/Desktop/ios-fastlane-template/docs/homebrew_tap.md)。
+这要求 tap 仓库以 `IOSTimor/homebrew-ios-release` 发布，详情见 [docs/homebrew_tap.md](docs/homebrew_tap.md)。
 
 然后进入目标 iOS 工程：
 
 ```bash
-fastlane lanes
-fastlane ios validate_setup
-fastlane ios precheck_assets
-fastlane ios local_build scheme:"MyApp" export_method:"development"
+bundle install
+bundle exec fastlane lanes
+bundle exec fastlane ios validate_setup
+bundle exec fastlane ios precheck_assets
+bundle exec fastlane ios local_build scheme:"MyApp" export_method:"development"
 ```
 
-如果目标工程还没有 `.env`，安装脚本会自动创建。
+安装脚本会在缺失时创建 `fastlane/.env`。已有根目录 `.env` 会在首次迁移时导入，之后请编辑 `fastlane/.env`。即使使用 `--force`，已有环境文件和素材也会保留。
 
 ### 核心工作流
 
@@ -258,7 +262,7 @@ fastlane ios local_build scheme:"MyApp" export_method:"development"
 使用 `git clone`：
 
 ```bash
-git clone git@github-personal:IOSTimor/ios-fastlane-template.git
+git clone https://github.com/IOSTimor/ios-fastlane-template.git
 cd ios-fastlane-template/ios-newapp-template
 bash scripts/create_project.sh /path/to/your/ios-project
 ```
@@ -287,7 +291,7 @@ ios-fastlane-template /path/to/your/ios-project \
 
 ### 最少要填的配置
 
-在 `.env` 中至少补这些值：
+在 `fastlane/.env` 中至少补这些值：
 
 ```dotenv
 APP_IDENTIFIER=com.example.app
@@ -304,18 +308,20 @@ APP_STORE_ISSUER_ID=
 APP_STORE_KEY_FILE=./fastlane/AuthKey_XXXXXXX.p8
 ```
 
+`release_existing` 和 `release_new` 默认只上传二进制。上传素材需显式设置 `upload_metadata:true` / `upload_screenshots:true`，并先替换示例内容。提交已有构建时，可通过 `build_number` 和 `version` 指定构建。
+
 ### 最常用命令
 
 本地 IPA：
 
 ```bash
-fastlane ios local_build scheme:"MyApp" export_method:"development"
+bundle exec fastlane ios local_build scheme:"MyApp" export_method:"development"
 ```
 
 已有 App 发布：
 
 ```bash
-fastlane ios release_existing \
+bundle exec fastlane ios release_existing \
   scheme:"MyApp" \
   app_identifier:"com.example.app" \
   version:"1.0.0" \
@@ -325,7 +331,7 @@ fastlane ios release_existing \
 只传 TestFlight：
 
 ```bash
-fastlane ios testflight_only \
+bundle exec fastlane ios testflight_only \
   scheme:"MyApp" \
   app_identifier:"com.example.app" \
   version:"1.0.0" \
@@ -335,7 +341,7 @@ fastlane ios testflight_only \
 提交审核：
 
 ```bash
-fastlane ios submit_review \
+bundle exec fastlane ios submit_review \
   app_identifier:"com.example.app" \
   upload_metadata:true \
   upload_screenshots:true
@@ -363,10 +369,10 @@ fastlane ios submit_review \
 │   └── troubleshooting.md
 ├── Formula/
 └── ios-newapp-template/
-    ├── .env.example
     ├── Gemfile
     ├── Makefile
     ├── fastlane/
+    │   ├── .env.example
     │   ├── .env.default
     │   ├── Appfile
     │   ├── Fastfile
@@ -377,11 +383,19 @@ fastlane ios submit_review \
 
 ### 更多文档
 
-- 上手指南: [docs/fastlane_ios_onboarding_guide.md](/Users/cx/Desktop/ios-fastlane-template/docs/fastlane_ios_onboarding_guide.md)
-- FAQ / 故障排查: [docs/troubleshooting.md](/Users/cx/Desktop/ios-fastlane-template/docs/troubleshooting.md)
-- Release 草稿: [docs/releases/v1.2.1.md](/Users/cx/Desktop/ios-fastlane-template/docs/releases/v1.2.1.md)
-- Homebrew Tap 说明: [docs/homebrew_tap.md](/Users/cx/Desktop/ios-fastlane-template/docs/homebrew_tap.md)
-- Tap 仓库模板: [templates/homebrew-tap/README.md](/Users/cx/Desktop/ios-fastlane-template/templates/homebrew-tap/README.md)
-- Tap 仓库脚手架脚本: [scripts/prepare_homebrew_tap_repo.sh](/Users/cx/Desktop/ios-fastlane-template/scripts/prepare_homebrew_tap_repo.sh)
-- 参与贡献: [CONTRIBUTING.md](/Users/cx/Desktop/ios-fastlane-template/CONTRIBUTING.md)
-- 安全策略: [SECURITY.md](/Users/cx/Desktop/ios-fastlane-template/SECURITY.md)
+- 上手指南: [docs/fastlane_ios_onboarding_guide.md](docs/fastlane_ios_onboarding_guide.md)
+- FAQ / 故障排查: [docs/troubleshooting.md](docs/troubleshooting.md)
+- Release 草稿: [docs/releases/v1.2.1.md](docs/releases/v1.2.1.md)
+- Homebrew Tap 说明: [docs/homebrew_tap.md](docs/homebrew_tap.md)
+- Tap 仓库模板: [templates/homebrew-tap/README.md](templates/homebrew-tap/README.md)
+- Tap 仓库脚手架脚本: [scripts/prepare_homebrew_tap_repo.sh](scripts/prepare_homebrew_tap_repo.sh)
+- 参与贡献: [CONTRIBUTING.md](CONTRIBUTING.md)
+- 安全策略: [SECURITY.md](SECURITY.md)
+
+## Development checks
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+The tests use temporary projects and action doubles. If fastlane is installed, they also check actual dotenv loading. No test builds an app or uploads to Apple. CI runs the suite on macOS and Linux.

@@ -28,7 +28,7 @@ Check for:
 
 Conditional checks:
 
-- project-root `.env.example` for release or upload-oriented flows
+- `fastlane/.env.example` for release or upload-oriented flows
 - `fastlane/.env.default` when shared defaults are expected
 
 ## Environment-side checks
@@ -101,4 +101,4 @@ If the repo is configured but Apple-side setup is unverified, do not say "fully 
 - "ready for local validation"
 - "ready after Apple credentials/signing are confirmed"
 
-If `.env.example` exists, prefer telling the user to create or fill `.env` from it before running release lanes. Do not require this for a local-build-only workflow unless the lane was designed around env-only inputs.
+If `fastlane/.env.example` exists, prefer telling the user to create or fill `fastlane/.env` from it before running release lanes. Do not require this for a local-build-only workflow unless the lane was designed around env-only inputs.

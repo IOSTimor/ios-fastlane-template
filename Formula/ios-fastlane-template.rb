@@ -16,6 +16,7 @@ class IosFastlaneTemplate < Formula
       export REPO_OWNER="IOSTimor"
       export REPO_NAME="ios-fastlane-template"
       export REPO_REF="v1.2.1"
+      export ARCHIVE_URL="https://codeload.github.com/${REPO_OWNER}/${REPO_NAME}/tar.gz/refs/tags/${REPO_REF}"
       export SCRIPT_NAME_OVERRIDE="ios-fastlane-template"
       exec bash "#{libexec}/install.sh" "$@"
     EOS
@@ -24,5 +25,8 @@ class IosFastlaneTemplate < Formula
   test do
     output = shell_output("#{bin}/ios-fastlane-template 2>&1", 1)
     assert_match "Usage:", output
+    (testpath/"DemoApp/DemoApp.xcodeproj").mkpath
+    system bin/"ios-fastlane-template", testpath/"DemoApp"
+    assert_predicate testpath/"DemoApp/fastlane/Fastfile", :exist?
   end
 end

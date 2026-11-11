@@ -37,7 +37,8 @@ ruby -c ios-newapp-template/fastlane/Appfile
 bash -n ios-newapp-template/scripts/create_project.sh
 bash -n ios-newapp-template/scripts/replace_placeholders.sh
 cd ios-newapp-template && fastlane lanes
-make -C ios-newapp-template validate
+python3 -m unittest discover -s tests -v
+# In an installed iOS project: bundle exec fastlane ios validate_setup
 ```
 
 ## Pull Request Expectations

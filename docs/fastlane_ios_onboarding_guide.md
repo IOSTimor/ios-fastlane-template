@@ -22,10 +22,10 @@ This template does not:
 ```text
 your-ios-project/
 ├── Gemfile
-├── .env.example
-├── .env
 ├── Makefile
 └── fastlane/
+    ├── .env.example
+    ├── .env                 # local, ignored by Git
     ├── .env.default
     ├── Appfile
     ├── Fastfile
@@ -58,11 +58,11 @@ brew install --formula https://raw.githubusercontent.com/IOSTimor/ios-fastlane-t
 ios-fastlane-template /path/to/your/ios-project
 ```
 
-If you later want a dedicated Homebrew tap workflow, see [homebrew_tap.md](/Users/cx/Desktop/ios-fastlane-template/docs/homebrew_tap.md).
+If you later want a dedicated Homebrew tap workflow, see [homebrew_tap.md](homebrew_tap.md).
 
 Then in the target project:
 
-`.env` will be created automatically when missing.
+`fastlane/.env` will be created automatically when missing.
 
 If the target project already has a `fastlane/` setup, the installer will stop instead of overwriting it. Use `--force` only when you intentionally want to replace the template files.
 
@@ -75,13 +75,13 @@ ios-fastlane-template /path/to/your/ios-project \
   --scheme MyApp
 ```
 
-Optional but recommended for teams that want pinned Ruby dependencies:
+Install Ruby dependencies before running the commands; commit the generated Gemfile.lock in your app repository for reproducible versions:
 
 ```bash
 bundle install
 ```
 
-Fill at least these values in `.env`:
+Fill at least these values in `fastlane/.env`:
 
 ```dotenv
 APP_IDENTIFIER=com.example.app
@@ -128,7 +128,7 @@ The design goal is:
 - release flows share one implementation path
 - mutable inputs stay in options or env vars
 
-### `.env.example`
+### `fastlane/.env.example`
 
 Documents what each project must provide without committing secrets.
 
@@ -141,16 +141,16 @@ Holds safe committed defaults such as `SCHEME`, `PROJECT`, `APP_NAME`, and `LANG
 ### 1. Validate setup
 
 ```bash
-fastlane ios validate_setup
-fastlane ios precheck_assets
+bundle exec fastlane ios validate_setup
+bundle exec fastlane ios precheck_assets
 ```
 
-Checks the inferred paths and whether metadata or screenshots exist locally.
+Checks required local build paths and reports actual asset availability. Use `precheck_assets strict:true upload_screenshots:true` to reject incomplete metadata, starter copy and missing screenshots before a release.
 
 ### 2. Local IPA build only
 
 ```bash
-fastlane ios local_build \
+bundle exec fastlane ios local_build \
   scheme:"MyApp" \
   export_method:"development"
 ```
@@ -160,7 +160,7 @@ This lane does not require App Store Connect credentials.
 ### 3. Release an existing App Store Connect app
 
 ```bash
-fastlane ios release_existing \
+bundle exec fastlane ios release_existing \
   scheme:"MyApp" \
   app_identifier:"com.example.app" \
   version:"1.0.0" \
@@ -174,7 +174,7 @@ fastlane ios release_existing \
 ### 4. First release for a new app
 
 ```bash
-fastlane ios release_new \
+bundle exec fastlane ios release_new \
   create_app:true \
   scheme:"MyApp" \
   app_identifier:"com.example.app" \
@@ -188,7 +188,7 @@ fastlane ios release_new \
 ### 5. TestFlight upload only
 
 ```bash
-fastlane ios testflight_only \
+bundle exec fastlane ios testflight_only \
   scheme:"MyApp" \
   app_identifier:"com.example.app" \
   version:"1.0.0" \
@@ -198,7 +198,7 @@ fastlane ios testflight_only \
 ### 6. Submit review using an existing build
 
 ```bash
-fastlane ios submit_review \
+bundle exec fastlane ios submit_review \
   app_identifier:"com.example.app" \
   upload_metadata:true \
   upload_screenshots:true \
@@ -208,7 +208,7 @@ fastlane ios submit_review \
 ### 7. Metadata and screenshot upload only
 
 ```bash
-fastlane ios metadata_only \
+bundle exec fastlane ios metadata_only \
   app_identifier:"com.example.app" \
   upload_metadata:true \
   upload_screenshots:true
@@ -273,7 +273,7 @@ Do not run release lanes until:
 ### Ready now
 
 - copying the template into an existing iOS project
-- filling `.env`
+- filling `fastlane/.env`
 - validating lane availability
 - running local IPA export
 
@@ -289,3 +289,15 @@ Do not run release lanes until:
 - missing signing configuration in Xcode
 - invalid or missing App Store Connect access
 - missing or incorrect bundle identifier and team mapping
+
+## Updated release defaults and migration
+
+- Keep `.env`, `.env.default` and `.env.example` together under `fastlane/`. An existing root `.env` is imported only when `fastlane/.env` is missing.
+- `--force` replaces workflow code and inferred defaults, preserving local `.env` and existing metadata/screenshots. Review customized Fastfile changes before reinstalling.
+- `release_existing` / `release_new` upload the binary; opt into local metadata/screenshots explicitly.
+- `create_app:true` uses `produce` and requires an Apple ID login in addition to any API key used for subsequent uploads.
+- Use `submit_review build_number:42 version:2.0.0` to select an existing build. A combined build-and-review flow selects the version from the IPA just built.
+- External TestFlight distribution and combined review flows wait for build processing.
+- Project/workspace paths may be nested relative to the project root or absolute. If both are set, the workspace is used for building; PROJECT still selects the project for version updates.
+
+Version changes require PROJECT even when building a workspace, so agvtool is directed at the intended project.

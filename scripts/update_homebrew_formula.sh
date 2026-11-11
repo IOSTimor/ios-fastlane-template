@@ -17,7 +17,7 @@ portable_sed_in_place() {
   fi
 }
 
-if [[ -z "$VERSION" ]]; then
+if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   echo "Usage: bash scripts/update_homebrew_formula.sh <version>"
   exit 1
 fi
@@ -34,9 +34,16 @@ fi
 
 SHA=$(shasum -a 256 "$INSTALL_SCRIPT_PATH" | awk '{print $1}')
 
+portable_sed_in_place "s|^  url \".*\"|  url \"https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/v${VERSION}/scripts/install.sh\"|" "$FORMULA_PATH"
+portable_sed_in_place "s|^      export REPO_REF=.*|      export REPO_REF=\"v${VERSION}\"|" "$FORMULA_PATH"
 portable_sed_in_place "s|^  version \".*\"|  version \"${VERSION}\"|" "$FORMULA_PATH"
 portable_sed_in_place "s|^  sha256 \".*\"|  sha256 \"${SHA}\"|" "$FORMULA_PATH"
 
+if [[ "$FORMULA_PATH" == "Formula/ios-fastlane-template.rb" ]]; then
+  cp "$FORMULA_PATH" templates/homebrew-tap/Formula/ios-fastlane-template.rb
+fi
+
 echo "Updated $FORMULA_PATH"
+echo "Publish tag v${VERSION} with these exact installer bytes before distributing the formula."
 echo "  version: $VERSION"
 echo "  sha256:  $SHA"

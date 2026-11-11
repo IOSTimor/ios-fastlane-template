@@ -8,7 +8,18 @@ The format is based on Keep a Changelog, and this repository follows Semantic Ve
 
 ### Added
 
-- Placeholder for upcoming changes
+- Load generated configuration from `fastlane/.env`, with one-time legacy root `.env` import and Git ignore rules.
+- Preserve existing metadata, screenshots and local environment files during forced installation.
+- Preserve spaces and nested paths in project detection; exclude Pods and internal project workspaces.
+- Validate build paths, partial credentials and requested assets before building or creating an app.
+- Reject empty metadata and starter placeholders in requested uploads; count actual screenshot images.
+- Require explicit metadata/screenshot uploads in release lanes; reuse remote assets for existing-build review.
+- Upload each binary once; pin combined review submission to the IPA just built.
+- Wait for external TestFlight distribution and review submission; reject conflicting processing options.
+- Omit empty Makefile options and pass values as data; apply version changes to the selected project.
+- Fix tag archive download URLs, synchronize formula update fields and add real formula installation checks.
+- Run installer and release regressions on macOS and Linux; replace the contradictory multi-project assertion.
+- Replace machine-specific documentation links and SSH aliases.
 
 ## [1.2.1] - 2026-04-05
 

@@ -1,26 +1,43 @@
 default_platform(:ios)
 
+def present_value(value)
+  return nil if value.nil? || (value.respond_to?(:strip) && value.strip.empty?)
+
+  value
+end
+
 def option_or_env(options, key, env_key = nil, fallback = nil)
-  options[key] || ENV[env_key || key.to_s.upcase] || fallback
+  present_value(options[key]) || present_value(ENV[env_key || key.to_s.upcase]) || fallback
 end
 
 def bool_option(options, key, default = false)
-  raw = options.key?(key) ? options[key] : default
+  raw = present_value(options[key])
+  raw = default if raw.nil?
   return raw if raw == true || raw == false
 
-  %w[1 true yes y on].include?(raw.to_s.strip.downcase)
+  normalized = raw.to_s.strip.downcase
+  return true if %w[1 true yes y on].include?(normalized)
+  return false if %w[0 false no n off].include?(normalized)
+
+  UI.user_error!("Invalid boolean for #{key}: #{raw.inspect}")
+end
+
+def api_key_configured?
+  %w[APP_STORE_KEY_ID APP_STORE_ISSUER_ID APP_STORE_KEY_FILE].all? { |key| present_value(ENV[key]) }
 end
 
 def release_api_key
-  return nil if ENV["APP_STORE_KEY_ID"].to_s.empty?
-  return nil if ENV["APP_STORE_ISSUER_ID"].to_s.empty?
-  return nil if ENV["APP_STORE_KEY_FILE"].to_s.empty?
+  return nil unless api_key_configured?
 
   app_store_connect_api_key(
     key_id: ENV["APP_STORE_KEY_ID"],
     issuer_id: ENV["APP_STORE_ISSUER_ID"],
-    key_filepath: ENV["APP_STORE_KEY_FILE"]
+    key_filepath: project_path(ENV["APP_STORE_KEY_FILE"])
   )
+end
+
+def project_path(path)
+  File.expand_path(path, File.expand_path("..", __dir__))
 end
 
 def build_output_dir
@@ -33,12 +50,6 @@ end
 
 def screenshots_path
   File.expand_path("screenshots", __dir__)
-end
-
-def directory_has_files?(path)
-  return false unless Dir.exist?(path)
-
-  Dir.glob(File.join(path, "**", "*")).any? { |entry| File.file?(entry) }
 end
 
 def screenshot_file?(entry)
@@ -77,11 +88,18 @@ def collect_asset_precheck
   metadata_report = metadata_locales.map do |locale_path|
     existing_files = Dir.glob(File.join(locale_path, "*.txt")).map { |file| File.basename(file) }
     missing_files = metadata_required_files - existing_files
+    invalid_files = existing_files.select do |name|
+      content = File.read(File.join(locale_path, name), encoding: "UTF-8")
+      (metadata_required_files.include?(name) && content.strip.empty?) || content.match?(
+        /YourApp|https?:\/\/example\.com\b|Describe your app in|Add short promotional copy|Add a short App Store subtitle|Summarize the most important user-facing improvements|请用 2 到 4 段|在这里填写|本次更新建议填写/
+      )
+    end
 
     {
       locale: relative_locale_name(locale_path),
       existing_files: existing_files.sort,
-      missing_files: missing_files.sort
+      missing_files: missing_files.sort,
+      invalid_files: invalid_files.sort
     }
   end
 
@@ -113,6 +131,7 @@ def print_asset_precheck(report)
     report[:metadata_report].each do |item|
       UI.message("Metadata locale #{item[:locale]}: #{item[:existing_files].length} files")
       UI.important("Metadata locale #{item[:locale]} missing: #{item[:missing_files].join(', ')}") unless item[:missing_files].empty?
+      UI.important("Metadata locale #{item[:locale]} empty or contains template placeholders: #{item[:invalid_files].join(', ')}") unless item[:invalid_files].empty?
     end
   end
 
@@ -139,6 +158,11 @@ def ensure_upload_assets_ready!(upload_metadata:, upload_screenshots:)
       locale_names = incomplete_locales.map { |item| item[:locale] }
       UI.user_error!("Metadata upload requested, but metadata locales are incomplete: #{locale_names.join(', ')}")
     end
+
+    invalid_locales = report[:metadata_report].select { |item| item[:invalid_files].any? }
+    unless invalid_locales.empty?
+      UI.user_error!("Replace empty metadata and template placeholders before uploading: #{invalid_locales.map { |item| item[:locale] }.join(', ')}")
+    end
   end
 
   if upload_screenshots && !report[:screenshots_present]
@@ -153,7 +177,7 @@ def build_options(options, export_method:)
     export_method: export_method,
     clean: bool_option(options, :clean, true),
     output_directory: build_output_dir,
-    output_name: options[:output_name]
+    output_name: present_value(options[:output_name])
   }
 
   workspace = option_or_env(options, :workspace, "WORKSPACE")
@@ -161,43 +185,99 @@ def build_options(options, export_method:)
   derived_data_path = option_or_env(options, :derived_data_path, "DERIVED_DATA_PATH")
   export_options_plist = option_or_env(options, :export_options_plist, "EXPORT_OPTIONS_PLIST")
 
-  build_options[:workspace] = workspace unless workspace.to_s.empty?
-  build_options[:project] = project unless project.to_s.empty?
-  build_options[:derived_data_path] = derived_data_path unless derived_data_path.to_s.empty?
-  build_options[:export_options] = export_options_plist unless export_options_plist.to_s.empty?
+  build_options[:workspace] = project_path(workspace) if workspace
+  build_options[:project] = project_path(project) if project && !workspace
+  build_options[:derived_data_path] = project_path(derived_data_path) if derived_data_path
+  build_options[:export_options] = project_path(export_options_plist) if export_options_plist
 
   build_options.compact
 end
 
-def ensure_release_ready!(options)
-  missing = []
+def ensure_build_ready!(options)
+  UI.user_error!("Missing required build input: scheme or SCHEME") unless option_or_env(options, :scheme, "SCHEME")
 
-  missing << "scheme or SCHEME" if option_or_env(options, :scheme, "SCHEME").to_s.empty?
-  missing << "app_identifier or APP_IDENTIFIER" if option_or_env(options, :app_identifier, "APP_IDENTIFIER").to_s.empty?
+  workspace = option_or_env(options, :workspace, "WORKSPACE")
+  project = option_or_env(options, :project, "PROJECT")
+  selected = workspace || project
+  UI.user_error!("Set workspace/WORKSPACE or project/PROJECT explicitly") unless selected
+  UI.user_error!("Xcode project/workspace does not exist: #{selected}") unless File.directory?(project_path(selected))
 
-  if release_api_key.nil? && ENV["FASTLANE_SESSION"].to_s.empty? && ENV["FASTLANE_USER"].to_s.empty? && ENV["APPLE_ID"].to_s.empty?
-    missing << "App Store Connect credentials (API key env vars or FASTLANE_SESSION/FASTLANE_USER)"
+  if present_value(options[:version]) || present_value(options[:build_number])
+    UI.user_error!("Version changes require project/PROJECT") unless project
+    UI.user_error!("Version update project does not exist: #{project}") unless File.directory?(project_path(project))
   end
 
-  UI.user_error!("Missing required release inputs: #{missing.join(', ')}") unless missing.empty?
+  plist = option_or_env(options, :export_options_plist, "EXPORT_OPTIONS_PLIST")
+  UI.user_error!("Export options plist does not exist: #{plist}") if plist && !File.file?(project_path(plist))
+end
+
+def ensure_release_ready!(options, build: true)
+  ensure_build_ready!(options) if build
+  identifier = option_or_env(options, :app_identifier, "APP_IDENTIFIER")
+  UI.user_error!("Set a real app_identifier or APP_IDENTIFIER") if identifier.nil? || identifier == "com.example.app"
+
+  keys = %w[APP_STORE_KEY_ID APP_STORE_ISSUER_ID APP_STORE_KEY_FILE]
+  if keys.any? { |key| present_value(ENV[key]) } && !api_key_configured?
+    UI.user_error!("App Store Connect API key configuration is incomplete")
+  end
+  if api_key_configured?
+    UI.user_error!("App Store Connect API key file does not exist") unless File.file?(project_path(ENV["APP_STORE_KEY_FILE"]))
+  else
+    username = present_value(ENV["FASTLANE_USER"]) || present_value(ENV["APPLE_ID"])
+    UI.user_error!("Provide App Store Connect API key credentials or an Apple ID") if username.nil? || username == "your-apple-id@example.com"
+  end
+end
+
+def release_settings(options)
+  ensure_release_ready!(options)
+  settings = {
+    upload_metadata: bool_option(options, :upload_metadata, false),
+    upload_screenshots: bool_option(options, :upload_screenshots, false),
+    submit_for_review: bool_option(options, :submit_for_review, false),
+    automatic_release: bool_option(options, :automatic_release, false),
+    upload_testflight: bool_option(options, :upload_testflight, true),
+    distribute_external: bool_option(options, :distribute_external, false)
+  }
+  if settings[:distribute_external] && !settings[:upload_testflight]
+    UI.user_error!("External distribution requires upload_testflight:true")
+  end
+  must_wait = settings[:distribute_external] || settings[:submit_for_review]
+  settings[:skip_waiting] = bool_option(options, :skip_waiting_for_build_processing, !must_wait)
+  if settings[:upload_testflight] && must_wait && settings[:skip_waiting]
+    UI.user_error!("External distribution and review submission require skip_waiting_for_build_processing:false")
+  end
+  if settings[:distribute_external] && !present_value(options[:groups])
+    UI.user_error!("External TestFlight distribution requires groups")
+  end
+  ensure_upload_assets_ready!(upload_metadata: settings[:upload_metadata], upload_screenshots: settings[:upload_screenshots])
+  settings
 end
 
 platform :ios do
   desc "Print configured lanes and inferred paths"
-  lane :validate_setup do
+  lane :validate_setup do |options|
+    ensure_build_ready!(options) if bool_option(options, :build, true)
+    report = collect_asset_precheck
     UI.message("Fastlane directory: #{File.expand_path(__dir__)}")
     UI.message("Build output directory: #{build_output_dir}")
-    UI.message("Metadata available: #{directory_has_files?(metadata_path)}")
-    UI.message("Screenshots available: #{directory_has_files?(screenshots_path)}")
+    UI.message("Metadata available: #{report[:metadata_present]}")
+    UI.message("Screenshots available: #{report[:screenshots_present]}")
     UI.message("Scheme default: #{ENV['SCHEME'] || '(unset)'}")
     UI.message("Project default: #{ENV['PROJECT'] || '(unset)'}")
     UI.message("Workspace default: #{ENV['WORKSPACE'] || '(unset)'}")
   end
 
   desc "Precheck metadata and screenshot assets before upload"
-  lane :precheck_assets do
+  lane :precheck_assets do |options|
     report = collect_asset_precheck
     print_asset_precheck(report)
+
+    if bool_option(options, :strict, false)
+      ensure_upload_assets_ready!(
+        upload_metadata: bool_option(options, :upload_metadata, true),
+        upload_screenshots: bool_option(options, :upload_screenshots, false)
+      )
+    end
 
     UI.success("Metadata files found") if report[:metadata_present]
     UI.success("Screenshot files found") if report[:screenshots_present]
@@ -208,14 +288,14 @@ platform :ios do
     require "fileutils"
     require "time"
 
+    ensure_build_ready!(options)
     scheme = option_or_env(options, :scheme, "SCHEME")
-    UI.user_error!("Missing required build input: scheme or SCHEME") if scheme.to_s.empty?
 
     export_method = option_or_env(options, :export_method, "EXPORT_METHOD", "development")
     FileUtils.mkdir_p(build_output_dir)
 
     timestamp = Time.now.strftime("%Y%m%d-%H%M%S")
-    output_name = options[:output_name] || "#{scheme}-#{timestamp}.ipa"
+    output_name = present_value(options[:output_name]) || "#{scheme}-#{timestamp}.ipa"
 
     build_app(
       **build_options(options.merge(output_name: output_name), export_method: export_method)
@@ -225,48 +305,55 @@ platform :ios do
   end
 
   private_lane :shared_release do |options|
-    ensure_release_ready!(options)
-
+    settings = release_settings(options)
     api_key = release_api_key
-    upload_metadata = bool_option(options, :upload_metadata, directory_has_files?(metadata_path))
-    upload_screenshots = bool_option(options, :upload_screenshots, directory_has_files?(screenshots_path))
-    submit_for_review = bool_option(options, :submit_for_review, false)
-    automatic_release = bool_option(options, :automatic_release, false)
-    upload_testflight = bool_option(options, :upload_testflight, true)
-    distribute_external = bool_option(options, :distribute_external, false)
+    project = option_or_env(options, :project, "PROJECT")
+    version_project = project ? { xcodeproj: project_path(project) } : {}
+    version = present_value(options[:version])
+    build_number = present_value(options[:build_number])
+    increment_version_number(**version_project.merge(version_number: version)) if version
+    increment_build_number(**version_project.merge(build_number: build_number)) if build_number
 
-    increment_version_number(version_number: options[:version]) if options[:version]
-    increment_build_number(build_number: options[:build_number]) if options[:build_number]
+    ipa = build_app(**build_options(options, export_method: "app-store"))
+    review_build = {}
+    if settings[:submit_for_review]
+      review_build[:build_number] = get_ipa_info_plist_value(ipa: ipa, key: "CFBundleVersion")
+      review_build[:app_version] = get_ipa_info_plist_value(ipa: ipa, key: "CFBundleShortVersionString")
+      UI.user_error!("Could not read the built IPA version for review submission") if review_build.values.any? { |value| present_value(value).nil? }
+    end
 
-    build_app(
-      **build_options(options, export_method: "app-store")
-    )
-
-    if upload_testflight
+    if settings[:upload_testflight]
       upload_to_testflight(
         api_key: api_key,
-        changelog: options[:beta_description],
-        groups: options[:groups],
-        testers: options[:testers],
-        distribute_external: distribute_external,
-        skip_waiting_for_build_processing: bool_option(options, :skip_waiting_for_build_processing, true)
+        ipa: ipa,
+        app_identifier: option_or_env(options, :app_identifier, "APP_IDENTIFIER"),
+        changelog: present_value(options[:beta_description]),
+        groups: present_value(options[:groups]),
+        testers: present_value(options[:testers]),
+        distribute_external: settings[:distribute_external],
+        skip_waiting_for_build_processing: settings[:skip_waiting]
       )
     end
 
-    if upload_metadata || upload_screenshots || submit_for_review
-      ensure_upload_assets_ready!(upload_metadata: upload_metadata, upload_screenshots: upload_screenshots)
-
+    if !settings[:upload_testflight] || settings[:upload_metadata] || settings[:upload_screenshots] || settings[:submit_for_review]
+      # deliver skips binary upload when selecting an existing build_number.
+      # For a direct App Store upload, let deliver upload the IPA and select it.
+      review_build = {} unless settings[:upload_testflight]
       deliver(
-        api_key: api_key,
-        app_identifier: option_or_env(options, :app_identifier, "APP_IDENTIFIER"),
-        metadata_path: metadata_path,
-        screenshots_path: screenshots_path,
-        skip_metadata: !upload_metadata,
-        skip_screenshots: !upload_screenshots,
-        force: true,
-        run_precheck_before_submit: false,
-        submit_for_review: submit_for_review,
-        automatic_release: automatic_release
+        **review_build.merge(
+          api_key: api_key,
+          ipa: ipa,
+          app_identifier: option_or_env(options, :app_identifier, "APP_IDENTIFIER"),
+          metadata_path: metadata_path,
+          screenshots_path: screenshots_path,
+          skip_binary_upload: settings[:upload_testflight],
+          skip_metadata: !settings[:upload_metadata],
+          skip_screenshots: !settings[:upload_screenshots],
+          force: true,
+          run_precheck_before_submit: false,
+          submit_for_review: settings[:submit_for_review],
+          automatic_release: settings[:automatic_release]
+        )
       )
     end
   end
@@ -279,7 +366,14 @@ platform :ios do
   desc "First release for a new app, optionally creating the App Store Connect app"
   lane :release_new do |options|
     if bool_option(options, :create_app, false)
+      release_settings(options)
+      username = present_value(ENV["FASTLANE_USER"]) || present_value(ENV["APPLE_ID"])
+      UI.user_error!("create_app:true uses produce and requires an Apple ID login") if username.nil? || username == "your-apple-id@example.com"
+      %i[app_name sku].each do |key|
+        UI.user_error!("create_app:true requires #{key}") unless option_or_env(options, key)
+      end
       produce(
+        username: username,
         app_identifier: option_or_env(options, :app_identifier, "APP_IDENTIFIER"),
         app_name: option_or_env(options, :app_name, "APP_NAME"),
         sku: option_or_env(options, :sku, "SKU"),
@@ -304,12 +398,12 @@ platform :ios do
     )
   end
 
-  desc "Submit an existing build for App Store review using local metadata and screenshots"
+  desc "Submit an existing build for review, optionally uploading local assets"
   lane :submit_review do |options|
-    ensure_release_ready!(options)
+    ensure_release_ready!(options, build: false)
 
-    upload_metadata = bool_option(options, :upload_metadata, directory_has_files?(metadata_path))
-    upload_screenshots = bool_option(options, :upload_screenshots, directory_has_files?(screenshots_path))
+    upload_metadata = bool_option(options, :upload_metadata, false)
+    upload_screenshots = bool_option(options, :upload_screenshots, false)
     ensure_upload_assets_ready!(upload_metadata: upload_metadata, upload_screenshots: upload_screenshots)
 
     deliver(
@@ -317,6 +411,8 @@ platform :ios do
       app_identifier: option_or_env(options, :app_identifier, "APP_IDENTIFIER"),
       metadata_path: metadata_path,
       screenshots_path: screenshots_path,
+      build_number: present_value(options[:build_number]),
+      app_version: present_value(options[:version]),
       skip_binary_upload: true,
       skip_metadata: !upload_metadata,
       skip_screenshots: !upload_screenshots,
@@ -329,13 +425,14 @@ platform :ios do
 
   desc "Upload metadata and screenshots only when local assets exist"
   lane :metadata_only do |options|
-    ensure_release_ready!(options)
+    ensure_release_ready!(options, build: false)
 
-    api_key = release_api_key
-    upload_metadata = bool_option(options, :upload_metadata, directory_has_files?(metadata_path))
-    upload_screenshots = bool_option(options, :upload_screenshots, directory_has_files?(screenshots_path))
+    report = collect_asset_precheck
+    upload_metadata = bool_option(options, :upload_metadata, true)
+    upload_screenshots = bool_option(options, :upload_screenshots, report[:screenshots_present])
 
     ensure_upload_assets_ready!(upload_metadata: upload_metadata, upload_screenshots: upload_screenshots)
+    api_key = release_api_key
 
     deliver(
       api_key: api_key,
