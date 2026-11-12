@@ -31,7 +31,7 @@ bash scripts/install.sh build /path/to/your/ios-project
 
 The helper prefers an app workspace, reads real schemes and signing settings from Xcode, and exports to the app's `build/` directory. It prompts if several apps are possible; use `--non-interactive --scheme MyApp` in CI. If fastlane is missing and Homebrew is available, it installs fastlane. Your app's existing Fastfile and environment files are preserved. Xcode signing and project dependencies must already be configured.
 
-Preview discovery with `--dry-run`. See [the complete one-command guide](docs/one_command_ipa.md). With Homebrew v1.3.0 or later, use `ios-fastlane-template build /path/to/your/ios-project` directly; Ruby, fastlane and the builder are installed together.
+Preview discovery with `--dry-run`. See [the complete one-command guide](docs/one_command_ipa.md). With Homebrew v1.3.1 or later, use `iosipa build /path/to/your/ios-project` directly; Ruby, fastlane and the builder are installed together.
 
 ### Quick Start
 
@@ -238,7 +238,7 @@ bash scripts/install.sh build /你的/iOS项目目录
 
 会自动优先选择 workspace，读取 Xcode 的真实 scheme、Team 和签名配置，输出到目标项目的 `build/`。存在多个 App 时提示选择；CI 可使用 `--non-interactive --scheme MyApp`。若缺少 fastlane 且已安装 Homebrew，会自动安装 fastlane。已有 Fastfile 和环境配置不会改写，Xcode 签名及项目依赖仍需正常。
 
-添加 `--dry-run` 可先查看识别结果。详见[一键打包说明](docs/one_command_ipa.md)。Homebrew v1.3.0 起可直接执行 `ios-fastlane-template build /你的/iOS项目目录`，Ruby、fastlane 和打包脚本会一并安装。
+添加 `--dry-run` 可先查看识别结果。详见[一键打包说明](docs/one_command_ipa.md)。Homebrew v1.3.1 起可直接执行 `iosipa build /你的/iOS项目目录`，Ruby、fastlane 和打包脚本会一并安装。
 
 ### 快速开始
 

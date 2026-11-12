@@ -233,6 +233,18 @@ if not os.environ.get('MISSING_IPA'):
         self.assertIn('Scheme: RealScheme',result.stdout)
         self.assertFalse((self.app/'fastlane').exists())
 
+    def test_short_command_help_and_legacy_help(self):
+        env=dict(self.env,SCRIPT_NAME_OVERRIDE='iosipa')
+        result=self.run_builder('--help',env=env)
+        self.assertEqual(result.returncode,0,result.stderr)
+        self.assertIn('Usage: iosipa build',result.stdout)
+        result=subprocess.run(['bash',str(REPO/'scripts/install.sh'),'--help'],env=env,text=True,capture_output=True,timeout=30)
+        self.assertEqual(result.returncode,0,result.stderr)
+        self.assertIn('Usage: iosipa ',result.stdout)
+        result=self.run_builder('--help')
+        self.assertEqual(result.returncode,0,result.stderr)
+        self.assertIn('Usage: ios-fastlane-template build',result.stdout)
+
     def test_invalid_flags_and_missing_project_fail(self):
         for args in [('--scheme',),('--export-method','upload'),('--project','Missing.xcodeproj'),('--workspace','one','--project','two')]:
             result=self.run_builder(*args)

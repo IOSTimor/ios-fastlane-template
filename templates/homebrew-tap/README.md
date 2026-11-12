@@ -45,10 +45,12 @@ brew reinstall ios-fastlane-template
 ios-fastlane-template
 ```
 
-## Build a local IPA (v1.3.0+)
+## Build a local IPA (v1.3.1+)
 
 ```bash
-ios-fastlane-template build /path/to/your/ios-project
+iosipa build /path/to/your/ios-project
 ```
 
 Add `--dry-run` to preview discovery. Homebrew installs Ruby, fastlane and the local builder. Xcode signing and the app's own dependencies must already be configured.
+
+The shorter `iosipa` name and the original `ios-fastlane-template` name both work. The Homebrew package is still named `ios-fastlane-template`.

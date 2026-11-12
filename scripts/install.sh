@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+SCRIPT_NAME="$(basename "$0")"
+SCRIPT_NAME=${SCRIPT_NAME_OVERRIDE:-$SCRIPT_NAME}
+
 MODE=install
 if [[ "${1:-}" == "build" ]]; then
   MODE=build
@@ -22,8 +25,8 @@ if [[ "$MODE" == "build" && -z "$TARGET_DIR" ]]; then
   TARGET_DIR=.
 fi
 if [[ "$TARGET_DIR" == "--help" || "$TARGET_DIR" == "-h" ]]; then
-  echo "Usage: ios-fastlane-template /path/to/your/ios-project [options]"
-  echo "Build: ios-fastlane-template build [PROJECT_DIRECTORY] [--scheme NAME] [--dry-run]"
+  echo "Usage: ${SCRIPT_NAME} /path/to/your/ios-project [options]"
+  echo "Build: ${SCRIPT_NAME} build [PROJECT_DIRECTORY] [--scheme NAME] [--dry-run]"
   echo "Options: --force --project PATH --workspace PATH --scheme NAME --app-name NAME --skip-generate-env"
   exit 0
 fi
@@ -33,8 +36,6 @@ REPO_NAME=${REPO_NAME:-ios-fastlane-template}
 REPO_REF=${REPO_REF:-main}
 ARCHIVE_URL=${ARCHIVE_URL:-"https://codeload.github.com/${REPO_OWNER}/${REPO_NAME}/tar.gz/${REPO_REF}"}
 LOCAL_ARCHIVE_PATH=${LOCAL_ARCHIVE_PATH:-}
-SCRIPT_NAME="$(basename "$0")"
-SCRIPT_NAME=${SCRIPT_NAME_OVERRIDE:-$SCRIPT_NAME}
 RAW_INSTALL_URL="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/scripts/install.sh"
 
 if [[ -z "$TARGET_DIR" ]]; then

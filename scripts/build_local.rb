@@ -16,7 +16,7 @@ class LocalIpaBuilder
   def initialize(argv)
     @options = { configuration: 'Release', export_method: 'development', interactive: true, provisioning_updates: true }
     @parser = OptionParser.new do |parser|
-      parser.banner = 'Usage: ios-fastlane-template build [PROJECT_DIRECTORY] [options]'
+      parser.banner = "Usage: #{ENV.fetch('SCRIPT_NAME_OVERRIDE', 'ios-fastlane-template')} build [PROJECT_DIRECTORY] [options]"
       parser.separator 'Automatically find an iOS app and export a local IPA. Directory defaults to the current directory.'
       parser.on('--project PATH', 'Use a specific .xcodeproj') { |value| @options[:project] = value }
       parser.on('--workspace PATH', 'Use a specific .xcworkspace') { |value| @options[:workspace] = value }

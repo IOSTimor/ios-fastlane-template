@@ -2,12 +2,14 @@
 
 适用于已经能在 Xcode 中正常构建和签名的 iOS App。无需先安装发布模板、填写 `.env` 或创建 Gemfile。
 
+从 v1.3.1 起推荐使用短命令 `iosipa`；原命令 `ios-fastlane-template` 继续兼容，安装包名称不变。
+
 ## Homebrew 安装和使用
 
 ```bash
 brew tap IOSTimor/ios-release
 brew install ios-fastlane-template
-ios-fastlane-template build /path/to/your/ios-project
+iosipa build /path/to/your/ios-project
 ```
 
 已安装旧版时执行 `brew update && brew upgrade ios-fastlane-template`。从 v1.3.0 起，Homebrew 会一并安装 Ruby、fastlane 和本地打包脚本，打包时无需再次下载仓库。添加 `--dry-run` 可先检查识别结果。
@@ -32,7 +34,7 @@ IPA 输出位置为：
 <目标项目>/build/<Scheme>-<时间戳>.ipa
 ```
 
-源码命令与 Homebrew 的 `ios-fastlane-template build` 使用同一个打包实现；参数相同。
+源码命令与 Homebrew 的 `iosipa build` 使用同一个打包实现；参数相同。
 
 ## 自动识别内容
 

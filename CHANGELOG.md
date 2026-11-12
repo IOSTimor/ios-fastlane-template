@@ -6,6 +6,13 @@ The format is based on Keep a Changelog, and this repository follows Semantic Ve
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-11-12
+
+### Added
+
+- `iosipa` short command installed alongside `ios-fastlane-template`, with matching help text.
+- Homebrew tests verify both command names can export local IPAs through the same implementation.
+
 ## [1.3.0] - 2026-11-12
 
 ### Added

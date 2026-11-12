@@ -1,9 +1,9 @@
 class IosFastlaneTemplate < Formula
   desc "Local IPA builder and release template installer for iOS"
   homepage "https://github.com/IOSTimor/ios-fastlane-template"
-  url "https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/v1.3.0/scripts/install.sh"
-  version "1.3.0"
-  sha256 "ccbc4b7081e892a346682e80c355c418de99b13f1be1d46230d174e88c844874"
+  url "https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/v1.3.1/scripts/install.sh"
+  version "1.3.1"
+  sha256 "881b334a4f76439dd4984b8b9cd666483f3107a23fabc9a043d35bf705c4a970"
   license "MIT"
 
   depends_on "bash"
@@ -11,8 +11,8 @@ class IosFastlaneTemplate < Formula
   depends_on "ruby"
 
   resource "local-ipa-builder" do
-    url "https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/v1.3.0/scripts/build_local.rb"
-    sha256 "9044621b1a1890d7d77e43079772503e78d1ee59cd04a00400e47fcddfc8bde3"
+    url "https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/v1.3.1/scripts/build_local.rb"
+    sha256 "3b81ac1d1c5bb412db7bb937dc43c5199f6e759e8302a1eb8ff87dfd1a489dc4"
   end
 
   def install
@@ -26,17 +26,21 @@ class IosFastlaneTemplate < Formula
       export PATH="#{Formula["ruby"].opt_bin}:$PATH"
       export REPO_OWNER="IOSTimor"
       export REPO_NAME="ios-fastlane-template"
-      export REPO_REF="v1.3.0"
+      export REPO_REF="v1.3.1"
       export ARCHIVE_URL="https://codeload.github.com/${REPO_OWNER}/${REPO_NAME}/tar.gz/refs/tags/${REPO_REF}"
-      export SCRIPT_NAME_OVERRIDE="ios-fastlane-template"
+      export SCRIPT_NAME_OVERRIDE="$(basename "$0")"
       exec "#{Formula["bash"].opt_bin}/bash" "#{libexec}/install.sh" "$@"
     EOS
+    bin.install_symlink bin/"ios-fastlane-template" => "iosipa"
   end
 
   test do
     output = shell_output("#{bin}/ios-fastlane-template 2>&1", 1)
     assert_match "Usage:", output
     assert_match "Automatically find an iOS app", shell_output("#{bin}/ios-fastlane-template build --help")
+    assert_predicate bin/"iosipa", :symlink?
+    assert_match "Usage: iosipa build", shell_output("#{bin}/iosipa build --help")
+    assert_match "Usage: iosipa", shell_output("#{bin}/iosipa --help")
     (testpath/"DemoApp/DemoApp.xcodeproj").mkpath
     system bin/"ios-fastlane-template", testpath/"DemoApp"
     assert_predicate testpath/"DemoApp/fastlane/Fastfile", :exist?
@@ -70,7 +74,10 @@ class IosFastlaneTemplate < Formula
     chmod 0755, mock_bin/"xcodebuild"
     chmod 0755, mock_bin/"fastlane"
     ENV.prepend_path "PATH", mock_bin
-    system bin/"ios-fastlane-template", "build", testpath/"DemoApp", "--non-interactive"
-    assert_equal 1, (testpath/"DemoApp/build").glob("ActualApp-*.ipa").length
+    %w[iosipa ios-fastlane-template].each do |command|
+      output_dir = testpath/"DemoApp/build"/command
+      system bin/command, "build", testpath/"DemoApp", "--non-interactive", "--output-dir", output_dir
+      assert_equal 1, output_dir.glob("ActualApp-*.ipa").length
+    end
   end
 end
