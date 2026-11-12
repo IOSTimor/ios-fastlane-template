@@ -2,6 +2,8 @@
 
 Homebrew tap for `ios-fastlane-template`.
 
+新用户从 [iosipa 用户操作手册](https://github.com/IOSTimor/ios-fastlane-template/blob/main/docs/user_guide.md) 开始；账号配置请看 [认证指南](https://github.com/IOSTimor/ios-fastlane-template/blob/main/docs/authentication.md)。
+
 ## Install
 
 ```bash

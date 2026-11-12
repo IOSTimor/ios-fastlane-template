@@ -1,5 +1,7 @@
 # FAQ / Troubleshooting
 
+新用户请先阅读 [用户操作手册](user_guide.md)；认证信息来源和填写方法见 [认证指南](authentication.md)。
+
 ## Why does `pod search ios-fastlane-template` not find anything?
 
 This repository is not a CocoaPods pod. It is a reusable release automation template. Use one of these instead:

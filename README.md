@@ -2,6 +2,16 @@
 
 [English](#english) | [中文](#中文)
 
+**第一次使用：先看 [用户操作手册](docs/user_guide.md)。只打本地包无需 API 认证；上传和审核的配置见 [认证指南](docs/authentication.md)。**
+
+| 我想做什么 | 从这里开始 |
+|---|---|
+| 安装、理解项目路径、打第一个 IPA | [完整上手指南](docs/user_guide.md) |
+| 获取 Key ID、Issuer ID、`.p8` 或使用 Apple ID | [认证获取与配置](docs/authentication.md) |
+| 上传 TestFlight、文案截图、提交指定构建 | [发布子命令](docs/release_commands.md) |
+| 了解本地打包选项和签名要求 | [本地 IPA 说明](docs/one_command_ipa.md) |
+
+
 ## English
 
 Reusable `fastlane/` release template for iOS apps that already manage signing in Xcode.

@@ -1,5 +1,7 @@
 # 一条命令导出本地 IPA
 
+新用户请先阅读 [用户操作手册](user_guide.md)；认证信息来源和填写方法见 [认证指南](authentication.md)。
+
 适用于已经能在 Xcode 中正常构建和签名的 iOS App。无需先安装发布模板、填写 `.env` 或创建 Gemfile。
 
 从 v1.3.1 起推荐使用短命令 `iosipa`；原命令 `ios-fastlane-template` 继续兼容，安装包名称不变。

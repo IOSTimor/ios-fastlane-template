@@ -1,5 +1,7 @@
 # iOS Fastlane Reusable Release Onboarding Guide
 
+新用户请先阅读 [用户操作手册](user_guide.md)；认证信息来源和填写方法见 [认证指南](authentication.md)。
+
 This repository is built for teams that already have a working iOS app project and want a reusable `fastlane/` release workflow without introducing `match`.
 
 ## Scope

@@ -1,5 +1,7 @@
 # 统一发布子命令
 
+新用户请先阅读 [用户操作手册](user_guide.md)；认证信息来源和填写方法见 [认证指南](authentication.md)。
+
 Homebrew v1.4.0 起支持 `iosipa testflight`、`iosipa metadata` 和 `iosipa submit`。省略项目路径时使用当前目录；原命令 `ios-fastlane-template` 同样支持。
 
 ## 一次性准备
@@ -10,7 +12,7 @@ Homebrew v1.4.0 起支持 `iosipa testflight`、`iosipa metadata` 和 `iosipa su
 iosipa /path/to/app
 ```
 
-配置目标项目的 `fastlane/.env`，例如 API Key 认证：
+配置目标项目的 `fastlane/.env`，例如团队 API Key 认证（[后台获取步骤与字段说明](authentication.md#方案-a团队-api-key推荐)）：
 
 ```dotenv
 APP_IDENTIFIER=com.yourcompany.yourapp
