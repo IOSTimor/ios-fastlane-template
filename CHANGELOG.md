@@ -6,6 +6,13 @@ The format is based on Keep a Changelog, and this repository follows Semantic Ve
 
 ## [Unreleased]
 
+## [1.4.1] - 2026-11-12
+
+### Added
+
+- `iosipa docs` opens the public user guide; `--url` prints its address without opening a browser.
+- The docs entry works without a project, Ruby, Xcode, authentication or repository downloads.
+
 ## [1.4.0] - 2026-11-12
 
 ### Added

@@ -5,6 +5,47 @@ set -euo pipefail
 SCRIPT_NAME="$(basename "$0")"
 SCRIPT_NAME=${SCRIPT_NAME_OVERRIDE:-$SCRIPT_NAME}
 
+# Documentation is available without a project, Ruby, Xcode or repository download.
+if [[ "${1:-}" == "docs" ]]; then
+  shift
+  DOCS_URL="https://github.com/IOSTimor/ios-fastlane-template/blob/main/docs/user_guide.md"
+  if [[ $# -gt 1 ]]; then
+    echo "Usage: ${SCRIPT_NAME} docs [--url|--help]" >&2
+    exit 1
+  fi
+  case "${1:-}" in
+    --url)
+      printf '%s\n' "$DOCS_URL"
+      exit 0
+      ;;
+    -h|--help)
+      echo "Usage: ${SCRIPT_NAME} docs [--url]"
+      echo "Open the user guide in your default browser; --url prints the link only."
+      exit 0
+      ;;
+    '') ;;
+    *)
+      echo "Unknown docs option: $1" >&2
+      echo "Usage: ${SCRIPT_NAME} docs [--url|--help]" >&2
+      exit 1
+      ;;
+  esac
+  printf '%s\n' "$DOCS_URL"
+  if command -v open >/dev/null 2>&1; then
+    DOCS_OPENER=open
+  elif command -v xdg-open >/dev/null 2>&1; then
+    DOCS_OPENER=xdg-open
+  else
+    echo "No browser opener found. Open the URL above or use '${SCRIPT_NAME} docs --url'." >&2
+    exit 1
+  fi
+  if ! "$DOCS_OPENER" "$DOCS_URL"; then
+    echo "Could not open the browser. Open the URL above manually." >&2
+    exit 1
+  fi
+  exit 0
+fi
+
 MODE=install
 RELEASE_COMMAND=""
 case "${1:-}" in
@@ -29,6 +70,7 @@ if [[ "$MODE" != "install" && -z "$TARGET_DIR" ]]; then
 fi
 if [[ "$TARGET_DIR" == "--help" || "$TARGET_DIR" == "-h" ]]; then
   echo "Usage: ${SCRIPT_NAME} /path/to/your/ios-project [options]"
+  echo "Docs: ${SCRIPT_NAME} docs [--url]"
   echo "Build: ${SCRIPT_NAME} build [PROJECT_DIRECTORY] [options]"
   echo "Release: ${SCRIPT_NAME} testflight|metadata|submit [PROJECT_DIRECTORY] [options]"
   echo "Use ${SCRIPT_NAME} COMMAND --help for command-specific options."

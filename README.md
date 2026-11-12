@@ -2,6 +2,8 @@
 
 [English](#english) | [中文](#中文)
 
+在终端执行 `iosipa docs` 可直接打开操作手册（v1.4.1+）；无图形界面可执行 `iosipa docs --url`。
+
 **第一次使用：先看 [用户操作手册](docs/user_guide.md)。只打本地包无需 API 认证；上传和审核的配置见 [认证指南](docs/authentication.md)。**
 
 | 我想做什么 | 从这里开始 |

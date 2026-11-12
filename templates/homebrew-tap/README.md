@@ -66,3 +66,7 @@ iosipa submit /path/to/app --version 2.0.0 --build-number 42
 ```
 
 Set up the project's fastlane template and credentials first. `--dry-run` previews without contacting Apple; `COMMAND --help` lists supported options.
+
+## Open the guide (v1.4.1+)
+
+Run `iosipa docs` to open the user guide in your default browser. Use `iosipa docs --url` to print the link without opening a browser.

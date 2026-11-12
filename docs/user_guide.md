@@ -1,6 +1,8 @@
 # iosipa 用户操作手册
 
-适用版本：Homebrew `ios-fastlane-template` v1.4.0 及以上。面向第一次使用的 iOS 开发者。
+适用版本：发布子命令需 v1.4.0+，`docs` 命令需 v1.4.1+。面向第一次使用的 iOS 开发者。
+
+随时执行 `iosipa docs` 在默认浏览器打开本手册；`iosipa docs --url` 只输出网址，适合远程终端或 CI。
 
 `iosipa` 是本项目提供的命令行工具。安装包叫 `ios-fastlane-template`，原来的同名长命令仍然可用。
 
@@ -22,6 +24,7 @@
 
 | 目的 | 命令 | 需要先安装项目内模板吗 | 需要 Apple 上传认证吗 | 会发生什么 |
 |---|---|---|---|---|
+| 打开操作手册 | `iosipa docs` | 不需要 | 不需要 | 默认浏览器打开本手册 |
 | 打本地包 | `iosipa build` | 不需要 | 不需要 API Key；仍需 Xcode 签名 | 构建并导出本地 IPA |
 | 上传 TestFlight | `iosipa testflight` | 需要 | 需要 | 构建 App Store 包并上传 |
 | 上传描述／截图 | `iosipa metadata` | 需要 | 需要 | 更新线上素材，不上传 IPA |
@@ -348,6 +351,7 @@ iosipa submit --version 2.0.0 --build-number 42 --dry-run
 
 | 命令 | 主要参数 |
 |---|---|
+| `docs` | `--url`（只输出文档链接）、`--help` |
 | `build` | `--project` 或 `--workspace`、`--scheme`、`--configuration`、`--export-method`、`--output-dir`、`--non-interactive`、`--no-provisioning-updates`、`--dry-run` |
 | `testflight` | `--app-identifier`、`--scheme`、`--project`、`--workspace`、`--configuration`、`--version`、`--build-number`、`--changelog`、`--groups`、`--testers`、`--external`、`--wait`／`--no-wait`、`--non-interactive`、`--dry-run` |
 | `metadata` | `--app-identifier`、`--metadata`／`--no-metadata`、`--screenshots`／`--no-screenshots`、`--non-interactive`、`--dry-run` |
