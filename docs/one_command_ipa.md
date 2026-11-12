@@ -2,7 +2,17 @@
 
 适用于已经能在 Xcode 中正常构建和签名的 iOS App。无需先安装发布模板、填写 `.env` 或创建 Gemfile。
 
-## 使用
+## Homebrew 安装和使用
+
+```bash
+brew tap IOSTimor/ios-release
+brew install ios-fastlane-template
+ios-fastlane-template build /path/to/your/ios-project
+```
+
+已安装旧版时执行 `brew update && brew upgrade ios-fastlane-template`。从 v1.3.0 起，Homebrew 会一并安装 Ruby、fastlane 和本地打包脚本，打包时无需再次下载仓库。添加 `--dry-run` 可先检查识别结果。
+
+## 源码方式使用
 
 在本仓库根目录执行，替换最后的路径：
 
@@ -22,7 +32,7 @@ IPA 输出位置为：
 <目标项目>/build/<Scheme>-<时间戳>.ipa
 ```
 
-这是源码版入口。已发布的 Homebrew v1.2.1 不包含 `build` 子命令；需要发布包含新入口的版本并更新 tap 后才可使用 `ios-fastlane-template build`。
+源码命令与 Homebrew 的 `ios-fastlane-template build` 使用同一个打包实现；参数相同。
 
 ## 自动识别内容
 

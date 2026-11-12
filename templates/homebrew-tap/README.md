@@ -44,3 +44,11 @@ brew tap IOSTimor/ios-release https://github.com/IOSTimor/homebrew-ios-release
 brew reinstall ios-fastlane-template
 ios-fastlane-template
 ```
+
+## Build a local IPA (v1.3.0+)
+
+```bash
+ios-fastlane-template build /path/to/your/ios-project
+```
+
+Add `--dry-run` to preview discovery. Homebrew installs Ruby, fastlane and the local builder. Xcode signing and the app's own dependencies must already be configured.

@@ -6,8 +6,11 @@ The format is based on Keep a Changelog, and this repository follows Semantic Ve
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-11-12
+
 ### Added
 
+- Homebrew installs the local builder, Ruby and fastlane; the installed `build` command works without downloading the repository.
 - One-command local IPA builder with real Xcode scheme/signing discovery, workspace preference, interactive selection, dry-run and isolated fastlane execution.
 
 - Load generated configuration from `fastlane/.env`, with one-time legacy root `.env` import and Git ignore rules.

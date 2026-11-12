@@ -20,8 +20,8 @@ jobs:
 
       - name: Install formula
         run: |
-          brew install ios-fastlane-template
+          brew install local/homebrew-tap/ios-fastlane-template
 
       - name: Verify CLI
         run: |
-          brew test ios-fastlane-template
+          brew test local/homebrew-tap/ios-fastlane-template
