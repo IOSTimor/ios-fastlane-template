@@ -6,6 +6,15 @@ The format is based on Keep a Changelog, and this repository follows Semantic Ve
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-11-12
+
+### Added
+
+- `iosipa testflight`, `iosipa metadata` and `iosipa submit` adapters for the existing release lanes.
+- Per-command options/help, exact existing-build selection, external distribution checks and no-network dry-run plans.
+- Homebrew bundles the release adapter; project workflows and credentials are preserved.
+- Project Bundler dependencies are checked/installed before invoking release lanes when a Gemfile exists.
+
 ## [1.3.1] - 2026-11-12
 
 ### Added

@@ -423,3 +423,13 @@ python3 -m unittest discover -s tests -v
 ```
 
 The tests use temporary projects and action doubles. If fastlane is installed, they also check actual dotenv loading. No test builds an app or uploads to Apple. CI runs the suite on macOS and Linux.
+
+## Unified release commands (v1.4.0+)
+
+```bash
+iosipa testflight /path/to/app
+iosipa metadata /path/to/app --screenshots
+iosipa submit /path/to/app --version 2.0.0 --build-number 42
+```
+
+Release commands use your project's existing fastlane setup. Install the template once with `iosipa /path/to/app`, configure `fastlane/.env`, and prepare real metadata/screenshots before uploading. `submit` requires the exact version/build and defaults to using remote assets and manual release after approval. Append `--dry-run` to preview without contacting Apple. See [发布子命令说明](docs/release_commands.md).

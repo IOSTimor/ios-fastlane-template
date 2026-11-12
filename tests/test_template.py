@@ -194,6 +194,8 @@ class InstallerTests(Fixture):
         text = formula.read_text()
         self.assertIn('/v1.2.2/scripts/install.sh', text)
         self.assertIn('/v1.2.2/scripts/build_local.rb', text)
+        self.assertIn('/v1.2.2/scripts/release.rb', text)
+        self.assertIn(hashlib.sha256((REPO / 'scripts/release.rb').read_bytes()).hexdigest(), text)
         self.assertIn(hashlib.sha256((REPO / 'scripts/build_local.rb').read_bytes()).hexdigest(), text)
         self.assertIn('version "1.2.2"', text)
         self.assertIn('REPO_REF="v1.2.2"', text)

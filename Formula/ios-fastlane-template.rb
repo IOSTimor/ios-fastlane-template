@@ -1,9 +1,9 @@
 class IosFastlaneTemplate < Formula
   desc "Local IPA builder and release template installer for iOS"
   homepage "https://github.com/IOSTimor/ios-fastlane-template"
-  url "https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/v1.3.1/scripts/install.sh"
-  version "1.3.1"
-  sha256 "881b334a4f76439dd4984b8b9cd666483f3107a23fabc9a043d35bf705c4a970"
+  url "https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/v1.4.0/scripts/install.sh"
+  version "1.4.0"
+  sha256 "a063ac6c950de9ec7974e62e760bbfa5b4df021b35d78bc6e5d507df36c20881"
   license "MIT"
 
   depends_on "bash"
@@ -11,8 +11,13 @@ class IosFastlaneTemplate < Formula
   depends_on "ruby"
 
   resource "local-ipa-builder" do
-    url "https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/v1.3.1/scripts/build_local.rb"
+    url "https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/v1.4.0/scripts/build_local.rb"
     sha256 "3b81ac1d1c5bb412db7bb937dc43c5199f6e759e8302a1eb8ff87dfd1a489dc4"
+  end
+
+  resource "release-commands" do
+    url "https://raw.githubusercontent.com/IOSTimor/ios-fastlane-template/v1.4.0/scripts/release.rb"
+    sha256 "3d27d062cacdc09fc71ba20434246453689e08806da10eca5d61a2af2e58f445"
   end
 
   def install
@@ -21,12 +26,16 @@ class IosFastlaneTemplate < Formula
       libexec.install "build_local.rb"
     end
 
+    resource("release-commands").stage do
+      libexec.install "release.rb"
+    end
+
     (bin/"ios-fastlane-template").write <<~EOS
       #!#{Formula["bash"].opt_bin}/bash
       export PATH="#{Formula["ruby"].opt_bin}:$PATH"
       export REPO_OWNER="IOSTimor"
       export REPO_NAME="ios-fastlane-template"
-      export REPO_REF="v1.3.1"
+      export REPO_REF="v1.4.0"
       export ARCHIVE_URL="https://codeload.github.com/${REPO_OWNER}/${REPO_NAME}/tar.gz/refs/tags/${REPO_REF}"
       export SCRIPT_NAME_OVERRIDE="$(basename "$0")"
       exec "#{Formula["bash"].opt_bin}/bash" "#{libexec}/install.sh" "$@"
@@ -41,9 +50,15 @@ class IosFastlaneTemplate < Formula
     assert_predicate bin/"iosipa", :symlink?
     assert_match "Usage: iosipa build", shell_output("#{bin}/iosipa build --help")
     assert_match "Usage: iosipa", shell_output("#{bin}/iosipa --help")
+    %w[testflight metadata submit].each do |command|
+      assert_match "#{command} [PROJECT_DIRECTORY]", shell_output("#{bin}/iosipa #{command} --help")
+    end
     (testpath/"DemoApp/DemoApp.xcodeproj").mkpath
     system bin/"ios-fastlane-template", testpath/"DemoApp"
     assert_predicate testpath/"DemoApp/fastlane/Fastfile", :exist?
+    system bin/"iosipa", "testflight", testpath/"DemoApp", "--dry-run"
+    system bin/"iosipa", "metadata", testpath/"DemoApp", "--dry-run"
+    system bin/"iosipa", "submit", testpath/"DemoApp", "--version", "1.0.0", "--build-number", "1", "--dry-run"
     mock_bin = testpath/"mock-bin"
     mock_bin.mkpath
     (mock_bin/"xcodebuild").write <<~RUBY

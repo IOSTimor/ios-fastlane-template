@@ -6,27 +6,32 @@ SCRIPT_NAME="$(basename "$0")"
 SCRIPT_NAME=${SCRIPT_NAME_OVERRIDE:-$SCRIPT_NAME}
 
 MODE=install
-if [[ "${1:-}" == "build" ]]; then
-  MODE=build
-  shift
-fi
+RELEASE_COMMAND=""
+case "${1:-}" in
+  build) MODE=build; shift ;;
+  testflight|metadata|submit) MODE=release; RELEASE_COMMAND=$1; shift ;;
+esac
 
-# A repository checkout already has the builder; avoid downloading or installing a template.
+# Prefer helpers already bundled beside the launcher; never install a template for release subcommands.
 INSTALL_SOURCE=${BASH_SOURCE[0]:-}
-if [[ "$MODE" == "build" && -n "$INSTALL_SOURCE" && -f "$INSTALL_SOURCE" ]]; then
+if [[ "$MODE" != "install" && -n "$INSTALL_SOURCE" && -f "$INSTALL_SOURCE" ]]; then
   SOURCE_DIR="$(cd "$(dirname "$INSTALL_SOURCE")" && pwd)"
-  if [[ -f "$SOURCE_DIR/build_local.rb" ]]; then
+  if [[ "$MODE" == "build" && -f "$SOURCE_DIR/build_local.rb" ]]; then
     exec ruby "$SOURCE_DIR/build_local.rb" "$@"
+  elif [[ "$MODE" == "release" && -f "$SOURCE_DIR/release.rb" ]]; then
+    exec ruby "$SOURCE_DIR/release.rb" "$RELEASE_COMMAND" "$@"
   fi
 fi
 
 TARGET_DIR=${1:-}
-if [[ "$MODE" == "build" && -z "$TARGET_DIR" ]]; then
+if [[ "$MODE" != "install" && -z "$TARGET_DIR" ]]; then
   TARGET_DIR=.
 fi
 if [[ "$TARGET_DIR" == "--help" || "$TARGET_DIR" == "-h" ]]; then
   echo "Usage: ${SCRIPT_NAME} /path/to/your/ios-project [options]"
-  echo "Build: ${SCRIPT_NAME} build [PROJECT_DIRECTORY] [--scheme NAME] [--dry-run]"
+  echo "Build: ${SCRIPT_NAME} build [PROJECT_DIRECTORY] [options]"
+  echo "Release: ${SCRIPT_NAME} testflight|metadata|submit [PROJECT_DIRECTORY] [options]"
+  echo "Use ${SCRIPT_NAME} COMMAND --help for command-specific options."
   echo "Options: --force --project PATH --workspace PATH --scheme NAME --app-name NAME --skip-generate-env"
   exit 0
 fi
@@ -94,6 +99,12 @@ if [[ "$MODE" == "build" ]]; then
     exit 1
   fi
   ruby "$EXTRACTED_DIR/scripts/build_local.rb" "$@"
+elif [[ "$MODE" == "release" ]]; then
+  if [[ ! -f "$EXTRACTED_DIR/scripts/release.rb" ]]; then
+    echo "This template version does not include release subcommands" >&2
+    exit 1
+  fi
+  ruby "$EXTRACTED_DIR/scripts/release.rb" "$RELEASE_COMMAND" "$@"
 else
   bash "$EXTRACTED_DIR/ios-newapp-template/scripts/create_project.sh" "$@"
 fi

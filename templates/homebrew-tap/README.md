@@ -54,3 +54,13 @@ iosipa build /path/to/your/ios-project
 Add `--dry-run` to preview discovery. Homebrew installs Ruby, fastlane and the local builder. Xcode signing and the app's own dependencies must already be configured.
 
 The shorter `iosipa` name and the original `ios-fastlane-template` name both work. The Homebrew package is still named `ios-fastlane-template`.
+
+## Release commands (v1.4.0+)
+
+```bash
+iosipa testflight /path/to/app
+iosipa metadata /path/to/app --screenshots
+iosipa submit /path/to/app --version 2.0.0 --build-number 42
+```
+
+Set up the project's fastlane template and credentials first. `--dry-run` previews without contacting Apple; `COMMAND --help` lists supported options.
